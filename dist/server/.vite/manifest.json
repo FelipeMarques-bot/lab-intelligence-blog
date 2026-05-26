@@ -1,0 +1,122 @@
+{
+  "C:/Windows/System32/lab-intelligence-blog/src/styles.css": {
+    "file": "assets/styles-mzHKZwf5.css",
+    "src": "C:/Windows/System32/lab-intelligence-blog/src/styles.css"
+  },
+  "_server-BkSh5JLl.js": {
+    "file": "assets/server-BkSh5JLl.js",
+    "name": "server",
+    "isDynamicEntry": true,
+    "dynamicImports": [
+      "tanstack-start-manifest:v",
+      "src/router.tsx",
+      "src/start.ts",
+      "node_modules/@tanstack/start-server-core/dist/esm/empty-plugin-adapters.js"
+    ]
+  },
+  "_worker-entry-BchJXN-j.js": {
+    "file": "assets/worker-entry-BchJXN-j.js",
+    "name": "worker-entry",
+    "dynamicImports": [
+      "_server-BkSh5JLl.js"
+    ]
+  },
+  "node_modules/@tanstack/start-server-core/dist/esm/empty-plugin-adapters.js": {
+    "file": "assets/empty-plugin-adapters-BFgPZ6_d.js",
+    "name": "empty-plugin-adapters",
+    "src": "node_modules/@tanstack/start-server-core/dist/esm/empty-plugin-adapters.js",
+    "isDynamicEntry": true
+  },
+  "src/assets/admin.jpg": {
+    "file": "assets/admin-DlagH3ND.jpg",
+    "src": "src/assets/admin.jpg"
+  },
+  "src/assets/blog1.jpg": {
+    "file": "assets/blog1-CMLj_9qz.jpg",
+    "src": "src/assets/blog1.jpg"
+  },
+  "src/assets/blog2.jpg": {
+    "file": "assets/blog2-insj5gK3.jpg",
+    "src": "src/assets/blog2.jpg"
+  },
+  "src/assets/blog3.jpg": {
+    "file": "assets/blog3-BteKteEw.jpg",
+    "src": "src/assets/blog3.jpg"
+  },
+  "src/assets/cta.jpg": {
+    "file": "assets/cta-BadbS8Ip.jpg",
+    "src": "src/assets/cta.jpg"
+  },
+  "src/assets/hero.jpg": {
+    "file": "assets/hero-ckfQ-LCj.jpg",
+    "src": "src/assets/hero.jpg"
+  },
+  "src/assets/student.jpg": {
+    "file": "assets/student-DFSVGFpg.jpg",
+    "src": "src/assets/student.jpg"
+  },
+  "src/assets/teacher.jpg": {
+    "file": "assets/teacher-Cv43-kau.jpg",
+    "src": "src/assets/teacher.jpg"
+  },
+  "src/router.tsx": {
+    "file": "assets/router-CVavlVw7.js",
+    "name": "router",
+    "src": "src/router.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_server-BkSh5JLl.js"
+    ],
+    "dynamicImports": [
+      "src/routes/index.tsx?tsr-split=component"
+    ],
+    "assets": [
+      "assets/styles-mzHKZwf5.css"
+    ]
+  },
+  "src/routes/index.tsx?tsr-split=component": {
+    "file": "assets/index-oAD_MwXy.js",
+    "name": "index",
+    "src": "src/routes/index.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": [
+      "_server-BkSh5JLl.js",
+      "src/router.tsx"
+    ],
+    "assets": [
+      "assets/hero-ckfQ-LCj.jpg",
+      "assets/admin-DlagH3ND.jpg",
+      "assets/teacher-Cv43-kau.jpg",
+      "assets/student-DFSVGFpg.jpg",
+      "assets/blog1-CMLj_9qz.jpg",
+      "assets/blog2-insj5gK3.jpg",
+      "assets/blog3-BteKteEw.jpg",
+      "assets/cta-BadbS8Ip.jpg"
+    ]
+  },
+  "src/start.ts": {
+    "file": "assets/start-paz9TzaL.js",
+    "name": "start",
+    "src": "src/start.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "_server-BkSh5JLl.js",
+      "_worker-entry-BchJXN-j.js"
+    ]
+  },
+  "tanstack-start-manifest:v": {
+    "file": "assets/_tanstack-start-manifest_v-BkiNE8AK.js",
+    "name": "_tanstack-start-manifest_v",
+    "src": "tanstack-start-manifest:v",
+    "isDynamicEntry": true
+  },
+  "virtual:cloudflare/worker-entry": {
+    "file": "index.js",
+    "name": "index",
+    "src": "virtual:cloudflare/worker-entry",
+    "isEntry": true,
+    "imports": [
+      "_worker-entry-BchJXN-j.js"
+    ]
+  }
+}
