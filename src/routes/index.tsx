@@ -1,4 +1,8 @@
+﻿<<<<<<< HEAD
 ﻿import { createFileRoute } from "@tanstack/react-router";
+=======
+import { createFileRoute } from "@tanstack/react-router";
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Check, Sparkles, Calendar, BarChart3, Menu, ArrowRight, Star } from "lucide-react";
@@ -16,8 +20,13 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
+<<<<<<< HEAD
 const SITE = "https://www.intelligencelab.com.br/";
 const SIGNUP = "https://www.intelligencelab.com.br/";
+=======
+const SITE = "https://www.intelligencelab.com.br";
+const SIGNUP = "https://www.intelligencelab.com.br/criar-instituicao";
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
 
 const NAV = [
   { label: "Home", href: "#home" },
@@ -47,7 +56,11 @@ function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+<<<<<<< HEAD
           <a href={SIGNUP} className="hidden sm:inline-flex">
+=======
+          <a href={SITE} target="_blank" rel="noopener noreferrer" className="hidden sm:inline-flex">
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
             <Button variant="brand" size="sm">Entrar</Button>
           </a>
           <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-muted-foreground" aria-label="Menu">
@@ -83,7 +96,11 @@ function Hero() {
             Gestão inteligente de <span className="text-gradient-brand">laboratórios</span> com visão em tempo real
           </h1>
           <p className="mt-6 text-lg text-muted-foreground max-w-xl">
+<<<<<<< HEAD
             Descubra como escolas e universidades transformam a Gestão de laboratórios em agendamento simples, relatórios poderosos e operação sem conflitos.
+=======
+            Descubra como escolas e universidades transformam a gestão de laboratórios — agendamento simples, relatórios poderosos e operação sem conflitos.
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#blog"><Button variant="brand" size="lg">Leia as histórias de sucesso <ArrowRight className="size-4" /></Button></a>
@@ -108,7 +125,11 @@ function Hero() {
 
 const ROLES = [
   {
+<<<<<<< HEAD
     icon: "🧑‍💼",
+=======
+    icon: "👨‍💼",
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
     title: "Administrador: Controle Total",
     img: adminImg,
     desc: "Gerencie professores, recursos, turmas e disciplinas em um único painel. Veja em tempo real quantos agendamentos existem, quantos professores estão cadastrados e quais recursos estão disponíveis.",
@@ -117,12 +138,20 @@ const ROLES = [
       "Gerenciamento de recursos (laboratórios, equipamentos)",
       "Criação de turmas e disciplinas",
       "Link exclusivo para onboarding de professores",
+<<<<<<< HEAD
       "relatórios e exportação de dados",
+=======
+      "Relatórios e exportação de dados",
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
       "Upgrade de plano conforme crescimento",
     ],
   },
   {
+<<<<<<< HEAD
     icon: "🧑‍🏫",
+=======
+    icon: "👨‍🏫",
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
     title: "Professor: Agendar com Facilidade",
     img: teacherImg,
     desc: "Professores acessam com Google Login e agendam laboratórios em segundos. Sincronize automaticamente com Google Calendar para nunca perder um agendamento.",
@@ -193,8 +222,13 @@ function Blog() {
     <section id="blog" className="py-24 bg-card/30 border-y border-border">
       <div className="mx-auto max-w-7xl px-6">
         <div className="text-center max-w-2xl mx-auto">
+<<<<<<< HEAD
           <h2 className="text-3xl sm:text-4xl font-bold">histórias de <span className="text-gradient-brand">Sucesso</span></h2>
           <p className="mt-4 text-muted-foreground">Veja como escolas reais transformaram a Gestão de laboratórios.</p>
+=======
+          <h2 className="text-3xl sm:text-4xl font-bold">Histórias de <span className="text-gradient-brand">Sucesso</span></h2>
+          <p className="mt-4 text-muted-foreground">Veja como escolas reais transformaram a gestão de laboratórios.</p>
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
         </div>
         <div className="mt-14 grid md:grid-cols-3 gap-6">
           {POSTS.map((p) => (
@@ -210,8 +244,13 @@ function Blog() {
                 </div>
                 <h3 className="mt-3 text-lg font-semibold leading-snug">{p.title}</h3>
                 <p className="mt-3 text-sm text-muted-foreground flex-1">{p.summary}</p>
+<<<<<<< HEAD
                 <a href={SIGNUP} className="mt-5 inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:gap-2.5 transition-all">
                   Tenha essa experiência também <ArrowRight className="size-4" />
+=======
+                <a href={SITE} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:gap-2.5 transition-all">
+                  Leia a história completa <ArrowRight className="size-4" />
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
                 </a>
               </div>
             </article>
@@ -223,15 +262,26 @@ function Blog() {
 }
 
 const FAQS = [
+<<<<<<< HEAD
   { q: "Como funciona o login dos professores?", a: "Professores fazem login com Google (ainda em construção). É rápido, seguro e sem necessidade de criar nova senha. O administrador compartilha um link exclusivo para onboarding." },
   { q: "Posso sincronizar com Google Calendar?", a: "Sim! Quando um professor agenda um laboratório, o evento aparece automaticamente no Google Calendar. Sincronização bidirecional para máxima conveniência (ainda em construção)." },
   { q: "Como funciona o agendamento de laboratórios?", a: "O professor acessa a plataforma, seleciona o laboratório desejado, escolhe a data e horário disponí­vel, e confirma. O sistema valida conflitos automaticamente." },
+=======
+  { q: "Como funciona o login dos professores?", a: "Professores fazem login com Google. É rápido, seguro e sem necessidade de criar nova senha. O administrador compartilha um link exclusivo para onboarding." },
+  { q: "Posso sincronizar com Google Calendar?", a: "Sim! Quando um professor agenda um laboratório, o evento aparece automaticamente no Google Calendar. Sincronização bidirecional para máxima conveniência." },
+  { q: "Como funciona o agendamento de laboratórios?", a: "O professor acessa a plataforma, seleciona o laboratório desejado, escolhe a data e horário disponível, e confirma. O sistema valida conflitos automaticamente." },
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
   { q: "Quais informações o administrador consegue ver?", a: "Dashboard completo com: total de agendamentos, número de professores cadastrados, recursos disponíveis, turmas criadas, e relatórios detalhados para exportação." },
   { q: "A plataforma funciona em celular?", a: "Sim! Temos versões mobile otimizadas para iOS e Android. Professores podem agendar de qualquer lugar, a qualquer hora." },
   { q: "Como adiciono novos laboratórios e recursos?", a: "No painel administrativo, clique em 'Recursos' e adicione novos laboratórios, equipamentos ou salas. Defina disponibilidade por dia da semana." },
   { q: "Posso criar turmas e disciplinas?", a: "Sim! Organize turmas por disciplina, semestre e professor. Isso ajuda a manter agendamentos consistentes e facilita relatórios por área." },
+<<<<<<< HEAD
   { q: "Como exporto relatórios de uso?", a: "Na seção 'relatórios', você pode gerar relatórios em PDF ou Excel com dados de agendamentos, uso de recursos, professores mais ativos, etc." },
   { q: "Existe perí­odo de teste antes de assinar?", a: "Sim! 30 dias de teste gratuito sem necessidade de cartão de crédito. Teste todas as funcionalidades antes de escolher seu plano." },
+=======
+  { q: "Como exporto relatórios de uso?", a: "Na seção 'Relatórios', você pode gerar relatórios em PDF ou Excel com dados de agendamentos, uso de recursos, professores mais ativos, etc." },
+  { q: "Existe período de teste antes de assinar?", a: "Sim! 30 dias de teste gratuito sem necessidade de cartão de crédito. Teste todas as funcionalidades antes de escolher seu plano." },
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
   { q: "Qual plano é ideal para minha instituição?", a: "Temos 5 planos: Micro (15 prof), Small (25 prof), Starter (50 prof), Professional (500 prof) e Enterprise (ilimitado). Escolha conforme seu tamanho." },
 ];
 
@@ -260,7 +310,11 @@ const COMPARE = [
   ["Agendamentos por email/planilha", "Agendamentos centralizados"],
   ["Conflitos de horário frequentes", "Sistema valida conflitos"],
   ["Professores não sabem disponibilidade", "Visibilidade em tempo real"],
+<<<<<<< HEAD
   ["Difí­cil rastrear uso de recursos", "relatórios detalhados"],
+=======
+  ["Difícil rastrear uso de recursos", "Relatórios detalhados"],
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
   ["Sem integração com calendário", "Sincroniza com Google Calendar"],
   ["Acesso apenas no computador", "Funciona em mobile e desktop"],
   ["Sem controle de acesso", "Segurança por autenticação"],
@@ -279,7 +333,11 @@ function Compare() {
             <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Antes</div>
             <ul className="space-y-3">
               {COMPARE.map(([a]) => (
+<<<<<<< HEAD
                 <li key={a} className="flex gap-3 text-sm"><span className="text-destructive">✖</span> <span className="text-muted-foreground">{a}</span></li>
+=======
+                <li key={a} className="flex gap-3 text-sm"><span className="text-destructive">✕</span> <span className="text-muted-foreground">{a}</span></li>
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
               ))}
             </ul>
           </div>
@@ -300,9 +358,15 @@ function Compare() {
 const PLANS = [
   { name: "MICRO", price: "R$ 34,95", features: ["15 professores", "1 laboratório", "Suporte por email"] },
   { name: "SMALL", price: "R$ 44,85", features: ["25 professores", "3 laboratórios", "Suporte por email"] },
+<<<<<<< HEAD
   { name: "STARTER", price: "R$ 59,32", popular: true, features: ["50 professores", "10 laboratórios", "Suporte prioritário", "relatórios avançados"] },
   { name: "PROFESSIONAL", price: "R$ 179,16", features: ["500 professores", "laboratórios ilimitados", "Suporte 24/7", "Integrações customizadas"] },
   { name: "ENTERPRISE", price: "R$ 209,62", enterprise: true, features: ["Professores ilimitados", "laboratórios ilimitados", "Suporte dedicado", "SLA garantido"] },
+=======
+  { name: "STARTER", price: "R$ 59,32", popular: true, features: ["50 professores", "10 laboratórios", "Suporte prioritário", "Relatórios avançados"] },
+  { name: "PROFESSIONAL", price: "R$ 179,16", features: ["500 professores", "Laboratórios ilimitados", "Suporte 24/7", "Integrações customizadas"] },
+  { name: "ENTERPRISE", price: "R$ 209,62", enterprise: true, features: ["Professores ilimitados", "Laboratórios ilimitados", "Suporte dedicado", "SLA garantido"] },
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
 ];
 
 function Pricing() {
@@ -336,7 +400,11 @@ function Pricing() {
                   <li key={f} className="flex gap-2"><Check className="size-4 text-primary shrink-0 mt-0.5" /> {f}</li>
                 ))}
               </ul>
+<<<<<<< HEAD
               <a href={SIGNUP} className="mt-6">
+=======
+              <a href={SIGNUP} target="_blank" rel="noopener noreferrer" className="mt-6">
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
                 <Button variant={p.popular ? "brand" : p.enterprise ? "purple" : "outlineGlow"} className="w-full">
                   Começar
                 </Button>
@@ -357,15 +425,26 @@ function CTA() {
         <div className="absolute inset-0 bg-gradient-to-br from-secondary/70 via-background/85 to-primary/40" />
       </div>
       <div className="relative mx-auto max-w-4xl px-6 text-center">
+<<<<<<< HEAD
         <h2 className="text-3xl sm:text-5xl font-bold">Transforme a Gestão de laboratórios da sua instituição</h2>
+=======
+        <h2 className="text-3xl sm:text-5xl font-bold">Transforme a gestão de laboratórios da sua instituição</h2>
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
         <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
           Período de teste, onboarding rápido e operação inteligente para equipes acadêmicas.
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
+<<<<<<< HEAD
           <a href={SIGNUP}>
             <Button variant="brand" size="lg">Crie sua instituição gratuitamente <ArrowRight className="size-4" /></Button>
           </a>
           <a href={SIGNUP}>
+=======
+          <a href={SIGNUP} target="_blank" rel="noopener noreferrer">
+            <Button variant="brand" size="lg">Crie sua instituição gratuitamente <ArrowRight className="size-4" /></Button>
+          </a>
+          <a href={SITE} target="_blank" rel="noopener noreferrer">
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
             <Button variant="outlineGlow" size="lg">Já tenho conta</Button>
           </a>
         </div>
@@ -384,9 +463,15 @@ function Footer() {
             LAB <span className="text-gradient-brand">INTELLIGENCE</span>
           </div>
           <p className="mt-3 text-sm text-muted-foreground max-w-sm">
+<<<<<<< HEAD
             Plataforma inteligente para Gestão de laboratórios educacionais.
           </p>
           <a href={SIGNUP} className="mt-4 inline-block text-sm text-primary hover:underline">
+=======
+            Plataforma inteligente para gestão de laboratórios educacionais.
+          </p>
+          <a href={SITE} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-sm text-primary hover:underline">
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
             www.intelligencelab.com.br
           </a>
         </div>
@@ -402,7 +487,11 @@ function Footer() {
           <h4 className="text-sm font-semibold mb-4">Recursos</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2"><Calendar className="size-4 text-primary" /> Agendamento inteligente</li>
+<<<<<<< HEAD
             <li className="flex items-center gap-2"><BarChart3 className="size-4 text-primary" /> relatórios em tempo real</li>
+=======
+            <li className="flex items-center gap-2"><BarChart3 className="size-4 text-primary" /> Relatórios em tempo real</li>
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
             <li className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /> Onboarding automático</li>
           </ul>
         </div>
@@ -433,6 +522,7 @@ function Landing() {
     </div>
   );
 }
+<<<<<<< HEAD
 
 
 
@@ -448,4 +538,7 @@ function Landing() {
 
 
 
+
+=======
+>>>>>>> parent of 1d6deb4 (fix: textos finais, integrações Google em construção e contato por e-mail)
 
