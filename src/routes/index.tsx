@@ -77,10 +77,10 @@ function Hero() {
         <div className="animate-fade-up">
           <span className="inline-flex items-center gap-2 rounded-full border border-glow px-3 py-1 text-xs text-primary">
             <Sparkles className="size-3.5" />
-            A FRONTEIRA DA INTELIGÊNCIA SINTÉTICA
+            Plataforma web e mobile — Novo: Portal dos Responsáveis
           </span>
           <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05]">
-            Gestão inteligente de <span className="text-gradient-brand">laboratórios</span> com visão em tempo real
+            Gestão inteligente de <span className="text-gradient-brand">laboratório</span>, comunicação escolar e portal dos responsáveis
           </h1>
           <p className="mt-6 text-lg text-muted-foreground max-w-xl">
             Descubra como escolas e universidades transformam a Gestão de laboratórios em agendamento simples, relatórios poderosos e operação sem conflitos.
