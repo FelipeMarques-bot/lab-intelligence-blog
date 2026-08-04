@@ -235,7 +235,7 @@ const FAQS = [
   { q: "A plataforma funciona em celular?", a: "Sim. A solução é web e mobile, com experiência otimizada para administração, professores e responsáveis." },
   { q: "Como adiciono novos laboratórios e recursos?", a: "No painel administrativo, acesse Recursos para cadastrar laboratórios, equipamentos e regras de disponibilidade." },
   { q: "Existe período de teste antes de assinar?", a: "Sim. Você pode testar por 30 dias, sem cartão de crédito, com acesso às funcionalidades essenciais da plataforma." },
-  { q: "Quais são os planos e valores atuais?", a: "Os planos começam em R$ 49,90/mês e evoluem conforme número de professores, laboratórios e nível de suporte necessário." },
+  { q: "Quais são os planos e valores atuais?", a: "Os planos começam em R$ 39,90/mês e evoluem conforme número de professores, laboratórios e nível de suporte necessário." },
 ];
 
 function FAQ() {
@@ -303,11 +303,11 @@ function Compare() {
 }
 
 const PLANS = [
-  { name: "MICRO", price: "R$ 49,90", suffix: "/mês", features: ["15 professores", "1 laboratório", "Portal dos Responsáveis", "Suporte por email"] },
-  { name: "SMALL", price: "R$ 89,90", suffix: "/mês", features: ["25 professores", "3 laboratórios", "Recados por turma", "Suporte por email"] },
-  { name: "STARTER", price: "R$ 149,90", suffix: "/mês", popular: true, features: ["50 professores", "10 laboratórios", "Suporte prioritário", "Relatórios avançados", "Comunicação com famílias"] },
-  { name: "PROFESSIONAL", price: "R$ 299,90", suffix: "/mês", features: ["500 professores", "Laboratórios ilimitados", "Suporte 24/7", "Integrações customizadas", "Gestão multiunidade"] },
-  { name: "ENTERPRISE", price: "Sob consulta", enterprise: true, features: ["Professores ilimitados", "Laboratórios ilimitados", "Suporte dedicado", "SLA garantido", "Implantação assistida"] },
+  { name: "MICRO", price: "R$ 39,90", suffix: "/mês", features: ["15 professores", "1 laboratório", "Portal dos Responsáveis", "Suporte por email"] },
+  { name: "SMALL", price: "R$ 52,90", suffix: "/mês", features: ["25 professores", "3 laboratórios", "Recados por turma", "Suporte por email"] },
+  { name: "STARTER", price: "R$ 69,90", suffix: "/mês", popular: true, features: ["50 professores", "10 laboratórios", "Suporte prioritário", "Relatórios avançados", "Comunicação com famílias"] },
+  { name: "PROFESSIONAL", price: "R$ 199,00", suffix: "/mês", features: ["500 professores", "Laboratórios ilimitados", "Suporte 24/7", "Integrações customizadas", "Gestão multiunidade"] },
+  { name: "ENTERPRISE", price: "R$ 249,00", suffix: "/mês", enterprise: true, features: ["Professores ilimitados", "Laboratórios ilimitados", "Suporte dedicado", "SLA garantido", "Implantação assistida"] },
 ];
 
 function Pricing() {
