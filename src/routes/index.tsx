@@ -83,7 +83,7 @@ function Hero() {
             Gestão inteligente de <span className="text-gradient-brand">laboratório</span>, comunicação escolar e portal dos responsáveis
           </h1>
           <p className="mt-6 text-lg text-muted-foreground max-w-xl">
-            Descubra como escolas e universidades transformam a Gestão de laboratórios em agendamento simples, relatórios poderosos e operação sem conflitos.
+            Centralize agendamento de laboratórios, recados de professores e comunicação com famílias em uma plataforma web e mobile com visão em tempo real.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#blog"><Button variant="brand" size="lg">Leia as histórias de sucesso <ArrowRight className="size-4" /></Button></a>
@@ -111,41 +111,44 @@ const ROLES = [
     icon: "🧑‍💼",
     title: "Administrador: Controle Total",
     img: adminImg,
-    desc: "Gerencie professores, recursos, turmas e disciplinas em um único painel. Veja em tempo real quantos agendamentos existem, quantos professores estão cadastrados e quais recursos estão disponíveis.",
+    desc: "Gerencie professores, recursos, turmas, disciplinas e comunicação institucional em um único painel com visibilidade total da operação.",
     items: [
       "Cadastro de professores",
       "Gerenciamento de recursos (laboratórios, equipamentos)",
       "Criação de turmas e disciplinas",
+      "Configuração do Portal dos Responsáveis",
+      "Acompanhamento de recados e comunicados",
       "Link exclusivo para onboarding de professores",
-      "relatórios e exportação de dados",
-      "Upgrade de plano conforme crescimento",
+      "Relatórios e exportação de dados",
     ],
   },
   {
     icon: "🧑‍🏫",
     title: "Professor: Agendar com Facilidade",
     img: teacherImg,
-    desc: "Professores acessam com Google Login e agendam laboratórios em segundos. Sincronize automaticamente com Google Calendar para nunca perder um agendamento.",
+    desc: "Professores acessam com Google Login, agendam laboratórios em segundos e enviam recados para as famílias sem sair da plataforma.",
     items: [
       "Login com Google",
       "Agendamento rápido de laboratórios",
       "Sincronização com Google Calendar",
+      "Envio de recados para responsáveis",
+      "Histórico de comunicados por turma",
       "Visualização de recursos disponíveis",
       "Confirmação instantânea de agendamento",
-      "Acesso mobile e desktop",
+      "Acesso web, mobile e desktop",
     ],
   },
   {
-    icon: "👨‍🎓",
-    title: "Aluno: Aprender em Ambientes Modernos",
+    icon: "👨‍👩‍👧‍👦",
+    title: "Responsáveis: Acompanhamento em Tempo Real",
     img: studentImg,
-    desc: "Alunos acessam salas de tecnologia educacional quando agendadas pelos professores. Ambiente seguro, organizado e com recursos disponíveis para aprendizado prático.",
+    desc: "Famílias acessam um portal dedicado para acompanhar recados, atualizações e comunicação oficial da escola de forma simples e segura.",
     items: [
-      "Acesso a laboratórios agendados",
-      "Recursos educacionais disponíveis",
-      "Ambiente seguro e organizado",
-      "Suporte de professores capacitados",
-      "Aprendizado prático e imersivo",
+      "Portal dos Responsáveis",
+      "Recebimento de recados de professores",
+      "Central de comunicados escolares",
+      "Acesso seguro por perfil",
+      "Histórico de mensagens e avisos",
     ],
   },
 ];
@@ -156,7 +159,7 @@ function HowItWorks() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold">Como a plataforma funciona</h2>
-          <p className="mt-4 text-muted-foreground">Um fluxo simples e intuitivo para administradores, professores e alunos.</p>
+          <p className="mt-4 text-muted-foreground">Um fluxo simples e intuitivo para administradores, professores e responsáveis.</p>
         </div>
         <div className="mt-14 grid md:grid-cols-3 gap-6">
           {ROLES.map((r) => (
@@ -183,9 +186,9 @@ function HowItWorks() {
 }
 
 const POSTS = [
-  { img: blog1, title: "Como a Escola Municipal de Tecnologia aumentou em 40% o uso de laboratórios", category: "Educação Pública", date: "15 de maio de 2026", summary: "Antes da Lab Intelligence, a escola tinha dificuldade em organizar agendamentos. Professores não sabiam quando os laboratórios estavam disponíveis. Com a plataforma, o uso aumentou 40% em 3 meses." },
-  { img: blog2, title: "Universidade Federal reduz conflitos de agendamento em 95%", category: "Educação Superior", date: "10 de maio de 2026", summary: "A universidade tinha conflitos constantes de agendamento. Com Lab Intelligence, todos os professores veem a disponibilidade em tempo real e sincronizam com Google Calendar." },
-  { img: blog3, title: "Instituto de Pesquisa otimiza uso de equipamentos caros", category: "Pesquisa", date: "5 de maio de 2026", summary: "Com relatórios detalhados da Lab Intelligence, o instituto descobriu que alguns equipamentos estavam subutilizados. Realocou recursos e aumentou eficiência em 60%." },
+  { img: blog1, title: "Rede escolar aumenta em 42% o uso dos laboratórios com agendamento centralizado", category: "Gestão Escolar", date: "22 de julho de 2026", summary: "Ao centralizar reservas e disponibilidade em tempo real, a rede eliminou sobreposição de horários e ampliou o uso pedagógico dos laboratórios em menos de um semestre." },
+  { img: blog2, title: "Portal dos Responsáveis melhora comunicação com famílias e reduz ruído operacional", category: "Comunicação Escolar", date: "16 de julho de 2026", summary: "Com recados organizados por turma e histórico de comunicados, a escola padronizou a comunicação com famílias e reduziu retrabalho da secretaria." },
+  { img: blog3, title: "Instituição integra recados, calendário e relatórios em uma única operação", category: "Transformação Digital", date: "8 de julho de 2026", summary: "A integração entre agendamento, Google Calendar e relatórios trouxe previsibilidade para coordenação e professores, com ganho de eficiência na rotina escolar." },
 ];
 
 function Blog() {
@@ -194,7 +197,7 @@ function Blog() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold">histórias de <span className="text-gradient-brand">Sucesso</span></h2>
-          <p className="mt-4 text-muted-foreground">Veja como escolas reais transformaram a Gestão de laboratórios.</p>
+          <p className="mt-4 text-muted-foreground">Veja como escolas reais transformaram agendamento, comunicação escolar e relacionamento com famílias.</p>
         </div>
         <div className="mt-14 grid md:grid-cols-3 gap-6">
           {POSTS.map((p) => (
@@ -223,16 +226,16 @@ function Blog() {
 }
 
 const FAQS = [
-  { q: "Como funciona o login dos professores?", a: "Professores fazem login com Google (ainda em construção). É rápido, seguro e sem necessidade de criar nova senha. O administrador compartilha um link exclusivo para onboarding." },
-  { q: "Posso sincronizar com Google Calendar?", a: "Sim! Quando um professor agenda um laboratório, o evento aparece automaticamente no Google Calendar. Sincronização bidirecional para máxima conveniência (ainda em construção)." },
-  { q: "Como funciona o agendamento de laboratórios?", a: "O professor acessa a plataforma, seleciona o laboratório desejado, escolhe a data e horário disponí­vel, e confirma. O sistema valida conflitos automaticamente." },
-  { q: "Quais informações o administrador consegue ver?", a: "Dashboard completo com: total de agendamentos, número de professores cadastrados, recursos disponíveis, turmas criadas, e relatórios detalhados para exportação." },
-  { q: "A plataforma funciona em celular?", a: "Sim! Temos versões mobile otimizadas para iOS e Android. Professores podem agendar de qualquer lugar, a qualquer hora." },
-  { q: "Como adiciono novos laboratórios e recursos?", a: "No painel administrativo, clique em 'Recursos' e adicione novos laboratórios, equipamentos ou salas. Defina disponibilidade por dia da semana." },
-  { q: "Posso criar turmas e disciplinas?", a: "Sim! Organize turmas por disciplina, semestre e professor. Isso ajuda a manter agendamentos consistentes e facilita relatórios por área." },
-  { q: "Como exporto relatórios de uso?", a: "Na seção 'relatórios', você pode gerar relatórios em PDF ou Excel com dados de agendamentos, uso de recursos, professores mais ativos, etc." },
-  { q: "Existe perí­odo de teste antes de assinar?", a: "Sim! 30 dias de teste gratuito sem necessidade de cartão de crédito. Teste todas as funcionalidades antes de escolher seu plano." },
-  { q: "Qual plano é ideal para minha instituição?", a: "Temos 5 planos: Micro (15 prof), Small (25 prof), Starter (50 prof), Professional (500 prof) e Enterprise (ilimitado). Escolha conforme seu tamanho." },
+  { q: "Como funciona o login dos professores?", a: "Professores fazem login com Google de forma rápida e segura. O administrador pode enviar um link exclusivo de onboarding para acelerar a entrada da equipe." },
+  { q: "O que é o Portal dos Responsáveis?", a: "É um ambiente dedicado para famílias acompanharem recados, comunicados e atualizações enviados pela escola e pelos professores." },
+  { q: "Como os recados de professores chegam às famílias?", a: "Os recados são publicados por turma e ficam disponíveis no Portal dos Responsáveis com histórico, facilitando o acompanhamento contínuo." },
+  { q: "Posso sincronizar com Google Calendar?", a: "Sim. Quando um professor agenda um laboratório, o evento pode ser sincronizado automaticamente com o Google Calendar." },
+  { q: "Como funciona o agendamento de laboratórios?", a: "O professor seleciona laboratório, data e horário. O sistema valida conflitos automaticamente e confirma o agendamento em segundos." },
+  { q: "Quais informações o administrador consegue ver?", a: "Dashboard com agendamentos, disponibilidade de recursos, turmas, comunicação enviada e relatórios para apoio à gestão." },
+  { q: "A plataforma funciona em celular?", a: "Sim. A solução é web e mobile, com experiência otimizada para administração, professores e responsáveis." },
+  { q: "Como adiciono novos laboratórios e recursos?", a: "No painel administrativo, acesse Recursos para cadastrar laboratórios, equipamentos e regras de disponibilidade." },
+  { q: "Existe período de teste antes de assinar?", a: "Sim. Você pode testar por 30 dias, sem cartão de crédito, com acesso às funcionalidades essenciais da plataforma." },
+  { q: "Quais são os planos e valores atuais?", a: "Os planos começam em R$ 49,90/mês e evoluem conforme número de professores, laboratórios e nível de suporte necessário." },
 ];
 
 function FAQ() {
@@ -260,9 +263,11 @@ const COMPARE = [
   ["Agendamentos por email/planilha", "Agendamentos centralizados"],
   ["Conflitos de horário frequentes", "Sistema valida conflitos"],
   ["Professores não sabem disponibilidade", "Visibilidade em tempo real"],
-  ["Difí­cil rastrear uso de recursos", "relatórios detalhados"],
+  ["Difícil rastrear uso de recursos", "Relatórios detalhados"],
   ["Sem integração com calendário", "Sincroniza com Google Calendar"],
-  ["Acesso apenas no computador", "Funciona em mobile e desktop"],
+  ["Famílias sem canal central de acompanhamento", "Portal dos Responsáveis com histórico"],
+  ["Recados dispersos em múltiplos canais", "Comunicação escolar em um só lugar"],
+  ["Acesso apenas no computador", "Funciona em web, mobile e desktop"],
   ["Sem controle de acesso", "Segurança por autenticação"],
   ["Dados espalhados em vários lugares", "Tudo centralizado e organizado"],
 ];
@@ -298,11 +303,11 @@ function Compare() {
 }
 
 const PLANS = [
-  { name: "MICRO", price: "R$ 34,95", features: ["15 professores", "1 laboratório", "Suporte por email"] },
-  { name: "SMALL", price: "R$ 44,85", features: ["25 professores", "3 laboratórios", "Suporte por email"] },
-  { name: "STARTER", price: "R$ 59,32", popular: true, features: ["50 professores", "10 laboratórios", "Suporte prioritário", "relatórios avançados"] },
-  { name: "PROFESSIONAL", price: "R$ 179,16", features: ["500 professores", "laboratórios ilimitados", "Suporte 24/7", "Integrações customizadas"] },
-  { name: "ENTERPRISE", price: "R$ 209,62", enterprise: true, features: ["Professores ilimitados", "laboratórios ilimitados", "Suporte dedicado", "SLA garantido"] },
+  { name: "MICRO", price: "R$ 49,90", suffix: "/mês", features: ["15 professores", "1 laboratório", "Portal dos Responsáveis", "Suporte por email"] },
+  { name: "SMALL", price: "R$ 89,90", suffix: "/mês", features: ["25 professores", "3 laboratórios", "Recados por turma", "Suporte por email"] },
+  { name: "STARTER", price: "R$ 149,90", suffix: "/mês", popular: true, features: ["50 professores", "10 laboratórios", "Suporte prioritário", "Relatórios avançados", "Comunicação com famílias"] },
+  { name: "PROFESSIONAL", price: "R$ 299,90", suffix: "/mês", features: ["500 professores", "Laboratórios ilimitados", "Suporte 24/7", "Integrações customizadas", "Gestão multiunidade"] },
+  { name: "ENTERPRISE", price: "Sob consulta", enterprise: true, features: ["Professores ilimitados", "Laboratórios ilimitados", "Suporte dedicado", "SLA garantido", "Implantação assistida"] },
 ];
 
 function Pricing() {
@@ -329,7 +334,7 @@ function Pricing() {
               <h3 className="text-sm font-semibold tracking-wider text-muted-foreground">{p.name}</h3>
               <div className="mt-3 flex items-baseline gap-1">
                 <span className="text-3xl font-bold">{p.price}</span>
-                <span className="text-sm text-muted-foreground">/mês</span>
+                {"suffix" in p && p.suffix ? <span className="text-sm text-muted-foreground">{p.suffix}</span> : null}
               </div>
               <ul className="mt-6 space-y-2 text-sm flex-1">
                 {p.features.map((f) => (
@@ -359,7 +364,7 @@ function CTA() {
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         <h2 className="text-3xl sm:text-5xl font-bold">Transforme a Gestão de laboratórios da sua instituição</h2>
         <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Período de teste, onboarding rápido e operação inteligente para equipes acadêmicas.
+          Agendamento inteligente, Portal dos Responsáveis e comunicação escolar centralizada para aproximar escola e famílias.
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
           <a href={SIGNUP}>
@@ -384,7 +389,7 @@ function Footer() {
             LAB <span className="text-gradient-brand">INTELLIGENCE</span>
           </div>
           <p className="mt-3 text-sm text-muted-foreground max-w-sm">
-            Plataforma inteligente para Gestão de laboratórios educacionais.
+            Plataforma inteligente para gestão de laboratório, comunicação escolar e relacionamento com responsáveis.
           </p>
           <a href={SIGNUP} className="mt-4 inline-block text-sm text-primary hover:underline">
             www.intelligencelab.com.br
@@ -402,8 +407,9 @@ function Footer() {
           <h4 className="text-sm font-semibold mb-4">Recursos</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2"><Calendar className="size-4 text-primary" /> Agendamento inteligente</li>
-            <li className="flex items-center gap-2"><BarChart3 className="size-4 text-primary" /> relatórios em tempo real</li>
-            <li className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /> Onboarding automático</li>
+            <li className="flex items-center gap-2"><BarChart3 className="size-4 text-primary" /> Relatórios em tempo real</li>
+            <li className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /> Portal dos Responsáveis</li>
+            <li className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /> Recados e comunicação com famílias</li>
           </ul>
         </div>
       </div>
