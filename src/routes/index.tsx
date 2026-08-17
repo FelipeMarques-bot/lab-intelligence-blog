@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Check, Sparkles, Calendar, BarChart3, Menu, ArrowRight, Star } from "lucide-react";
@@ -11,6 +11,24 @@ import blog1 from "@/assets/blog1.jpg";
 import blog2 from "@/assets/blog2.jpg";
 import blog3 from "@/assets/blog3.jpg";
 import ctaImg from "@/assets/cta.jpg";
+import { useInView } from "@/hooks/use-in-view";
+
+function AnimatedSection({ children, className = "", delay = 0 }: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const { ref, isVisible } = useInView();
+  return (
+    <div
+      ref={ref}
+      className={`${isVisible ? "animate-on-scroll visible" : "animate-on-scroll"} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -56,7 +74,7 @@ function Header() {
         </div>
       </div>
       {open && (
-        <div className="md:hidden border-t border-border bg-background/95">
+        <div className="md:hidden border-t border-border bg-background/95 menu-slide-down">
           <nav className="flex flex-col px-6 py-4 gap-3">
             {NAV.map((n) => (
               <a key={n.href} href={n.href} onClick={() => setOpen(false)} className="text-sm text-muted-foreground hover:text-primary">
@@ -74,7 +92,7 @@ function Hero() {
   return (
     <section id="home" className="relative overflow-hidden bg-hero">
       <div className="mx-auto max-w-7xl px-6 pt-16 pb-24 lg:pt-24 lg:pb-32 grid lg:grid-cols-2 gap-12 items-center">
-        <div className="animate-fade-up">
+        <AnimatedSection>
           <span className="inline-flex items-center gap-2 rounded-full border border-glow px-3 py-1 text-xs text-primary">
             <Sparkles className="size-3.5" />
             Plataforma web e mobile — Novo: Portal dos Responsáveis
@@ -94,13 +112,13 @@ function Hero() {
             <div className="flex items-center gap-2"><Check className="size-4 text-primary" /> Sem cartão</div>
             <div className="flex items-center gap-2"><Check className="size-4 text-primary" /> Setup em minutos</div>
           </div>
-        </div>
-        <div className="relative animate-fade-up">
+        </AnimatedSection>
+        <AnimatedSection delay={200} className="relative">
           <div className="absolute -inset-6 bg-gradient-brand opacity-20 blur-3xl rounded-full" />
           <div className="relative rounded-2xl overflow-hidden border-glow">
             <img src={hero} alt="Professores e alunos em laboratório de tecnologia" width={1600} height={1000} className="w-full h-auto" />
           </div>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );
@@ -157,27 +175,29 @@ function HowItWorks() {
   return (
     <section id="how" className="py-24">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="text-center max-w-2xl mx-auto">
+        <AnimatedSection className="text-center max-w-2xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold">Como a plataforma funciona</h2>
           <p className="mt-4 text-muted-foreground">Um fluxo simples e intuitivo para administradores, professores e responsáveis.</p>
-        </div>
+        </AnimatedSection>
         <div className="mt-14 grid md:grid-cols-3 gap-6">
-          {ROLES.map((r) => (
-            <article key={r.title} className="group rounded-2xl bg-card border border-border hover:border-glow transition-all overflow-hidden">
-              <div className="aspect-[4/3] overflow-hidden">
-                <img src={r.img} alt={r.title} loading="lazy" width={800} height={600} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              </div>
-              <div className="p-6">
-                <div className="text-3xl">{r.icon}</div>
-                <h3 className="mt-2 text-xl font-semibold">{r.title}</h3>
-                <p className="mt-3 text-sm text-muted-foreground">{r.desc}</p>
-                <ul className="mt-5 space-y-2 text-sm">
-                  {r.items.map((it) => (
-                    <li key={it} className="flex gap-2"><Check className="size-4 text-primary shrink-0 mt-0.5" /> <span>{it}</span></li>
-                  ))}
-                </ul>
-              </div>
-            </article>
+          {ROLES.map((r, i) => (
+            <AnimatedSection key={r.title} delay={i * 150} className="hover-lift">
+              <article className="group rounded-2xl bg-card border border-border hover:border-glow transition-all overflow-hidden">
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img src={r.img} alt={r.title} loading="lazy" width={800} height={600} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="p-6">
+                  <div className="text-3xl">{r.icon}</div>
+                  <h3 className="mt-2 text-xl font-semibold">{r.title}</h3>
+                  <p className="mt-3 text-sm text-muted-foreground">{r.desc}</p>
+                  <ul className="mt-5 space-y-2 text-sm">
+                    {r.items.map((it) => (
+                      <li key={it} className="flex gap-2"><Check className="size-4 text-primary shrink-0 mt-0.5" /> <span>{it}</span></li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+            </AnimatedSection>
           ))}
         </div>
       </div>
@@ -195,29 +215,31 @@ function Blog() {
   return (
     <section id="blog" className="py-24 bg-card/30 border-y border-border">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="text-center max-w-2xl mx-auto">
+        <AnimatedSection className="text-center max-w-2xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold">histórias de <span className="text-gradient-brand">Sucesso</span></h2>
           <p className="mt-4 text-muted-foreground">Veja como escolas reais transformaram agendamento, comunicação escolar e relacionamento com famílias.</p>
-        </div>
+        </AnimatedSection>
         <div className="mt-14 grid md:grid-cols-3 gap-6">
-          {POSTS.map((p) => (
-            <article key={p.title} className="group rounded-2xl bg-card border border-border hover:border-glow hover:-translate-y-1 transition-all overflow-hidden flex flex-col">
-              <div className="aspect-[16/10] overflow-hidden">
-                <img src={p.img} alt={p.title} loading="lazy" width={800} height={500} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              </div>
-              <div className="p-6 flex-1 flex flex-col">
-                <div className="flex items-center gap-3 text-xs">
-                  <span className="text-primary font-medium">{p.category}</span>
-                  <span className="text-muted-foreground">•</span>
-                  <span className="text-muted-foreground">{p.date}</span>
+          {POSTS.map((p, i) => (
+            <AnimatedSection key={p.title} delay={i * 150}>
+              <article className="group rounded-2xl bg-card border border-border hover:border-glow hover:-translate-y-1 transition-all overflow-hidden flex flex-col">
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img src={p.img} alt={p.title} loading="lazy" width={800} height={500} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
-                <h3 className="mt-3 text-lg font-semibold leading-snug">{p.title}</h3>
-                <p className="mt-3 text-sm text-muted-foreground flex-1">{p.summary}</p>
-                <a href={SIGNUP} className="mt-5 inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:gap-2.5 transition-all">
-                  Tenha essa experiência também <ArrowRight className="size-4" />
-                </a>
-              </div>
-            </article>
+                <div className="p-6 flex-1 flex flex-col">
+                  <div className="flex items-center gap-3 text-xs">
+                    <span className="text-primary font-medium">{p.category}</span>
+                    <span className="text-muted-foreground">•</span>
+                    <span className="text-muted-foreground">{p.date}</span>
+                  </div>
+                  <h3 className="mt-3 text-lg font-semibold leading-snug">{p.title}</h3>
+                  <p className="mt-3 text-sm text-muted-foreground flex-1">{p.summary}</p>
+                  <a href={SIGNUP} className="mt-5 inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:gap-2.5 transition-all">
+                    Tenha essa experiência também <ArrowRight className="size-4" />
+                  </a>
+                </div>
+              </article>
+            </AnimatedSection>
           ))}
         </div>
       </div>
@@ -242,16 +264,18 @@ function FAQ() {
   return (
     <section id="faq" className="py-24">
       <div className="mx-auto max-w-3xl px-6">
-        <div className="text-center">
+        <AnimatedSection className="text-center">
           <h2 className="text-3xl sm:text-4xl font-bold">Dúvidas Frequentes</h2>
           <p className="mt-4 text-muted-foreground">Respostas para as perguntas mais comuns.</p>
-        </div>
+        </AnimatedSection>
         <Accordion type="single" collapsible className="mt-10 space-y-3">
           {FAQS.map((f, i) => (
-            <AccordionItem key={i} value={`item-${i}`} className="rounded-xl bg-card border border-border px-5">
-              <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary">{f.q}</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
-            </AccordionItem>
+            <AnimatedSection key={i} delay={i * 80}>
+              <AccordionItem value={`item-${i}`} className="rounded-xl bg-card border border-border px-5">
+                <AccordionTrigger className="text-left font-medium hover:no-underline hover:text-primary">{f.q}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
+              </AccordionItem>
+            </AnimatedSection>
           ))}
         </Accordion>
       </div>
@@ -276,26 +300,26 @@ function Compare() {
   return (
     <section className="py-24 bg-card/30 border-y border-border">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="text-center">
+        <AnimatedSection className="text-center">
           <h2 className="text-3xl sm:text-4xl font-bold">Transformação com <span className="text-gradient-brand">Lab Intelligence</span></h2>
-        </div>
+        </AnimatedSection>
         <div className="mt-12 grid md:grid-cols-2 gap-4">
-          <div className="rounded-2xl bg-card border border-border p-6">
+          <AnimatedSection delay={100} className="rounded-2xl bg-card border border-border p-6">
             <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Antes</div>
             <ul className="space-y-3">
               {COMPARE.map(([a]) => (
                 <li key={a} className="flex gap-3 text-sm"><span className="text-destructive">✖</span> <span className="text-muted-foreground">{a}</span></li>
               ))}
             </ul>
-          </div>
-          <div className="rounded-2xl bg-card border-glow p-6">
+          </AnimatedSection>
+          <AnimatedSection delay={250} className="rounded-2xl bg-card border-glow p-6">
             <div className="text-sm font-semibold text-primary uppercase tracking-wider mb-4">Depois</div>
             <ul className="space-y-3">
               {COMPARE.map(([, b]) => (
                 <li key={b} className="flex gap-3 text-sm"><Check className="size-4 text-primary mt-0.5 shrink-0" /> <span>{b}</span></li>
               ))}
             </ul>
-          </div>
+          </AnimatedSection>
         </div>
       </div>
     </section>
@@ -314,39 +338,40 @@ function Pricing() {
   return (
     <section id="pricing" className="py-24">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="text-center max-w-2xl mx-auto">
+        <AnimatedSection className="text-center max-w-2xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold">Escolha o plano ideal para sua instituição</h2>
           <p className="mt-4 text-muted-foreground">Trial de 30 dias. Sem cartão de crédito.</p>
-        </div>
+        </AnimatedSection>
         <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-5 gap-5">
-          {PLANS.map((p) => (
-            <div
-              key={p.name}
-              className={`relative rounded-2xl bg-card p-6 flex flex-col ${
-                p.popular ? "border-glow lg:scale-105" : p.enterprise ? "border-glow-purple" : "border border-border"
-              }`}
-            >
-              {p.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full bg-gradient-brand px-3 py-1 text-[10px] font-semibold text-primary-foreground">
-                  <Star className="size-3 fill-current" /> MAIS POPULAR
+          {PLANS.map((p, i) => (
+            <AnimatedSection key={p.name} delay={i * 100} className={p.popular ? "lg:scale-105" : ""}>
+              <div
+                className={`relative rounded-2xl bg-card p-6 flex flex-col hover-lift ${
+                  p.popular ? "border-glow lg:scale-105" : p.enterprise ? "border-glow-purple" : "border border-border"
+                }`}
+              >
+                {p.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full bg-gradient-brand px-3 py-1 text-[10px] font-semibold text-primary-foreground">
+                    <Star className="size-3 fill-current" /> MAIS POPULAR
+                  </div>
+                )}
+                <h3 className="text-sm font-semibold tracking-wider text-muted-foreground">{p.name}</h3>
+                <div className="mt-3 flex items-baseline gap-1">
+                  <span className="text-3xl font-bold">{p.price}</span>
+                  {"suffix" in p && p.suffix ? <span className="text-sm text-muted-foreground">{p.suffix}</span> : null}
                 </div>
-              )}
-              <h3 className="text-sm font-semibold tracking-wider text-muted-foreground">{p.name}</h3>
-              <div className="mt-3 flex items-baseline gap-1">
-                <span className="text-3xl font-bold">{p.price}</span>
-                {"suffix" in p && p.suffix ? <span className="text-sm text-muted-foreground">{p.suffix}</span> : null}
+                <ul className="mt-6 space-y-2 text-sm flex-1">
+                  {p.features.map((f) => (
+                    <li key={f} className="flex gap-2"><Check className="size-4 text-primary shrink-0 mt-0.5" /> {f}</li>
+                  ))}
+                </ul>
+                <a href={SIGNUP} className="mt-6">
+                  <Button variant={p.popular ? "brand" : p.enterprise ? "purple" : "outlineGlow"} className="w-full">
+                    Começar
+                  </Button>
+                </a>
               </div>
-              <ul className="mt-6 space-y-2 text-sm flex-1">
-                {p.features.map((f) => (
-                  <li key={f} className="flex gap-2"><Check className="size-4 text-primary shrink-0 mt-0.5" /> {f}</li>
-                ))}
-              </ul>
-              <a href={SIGNUP} className="mt-6">
-                <Button variant={p.popular ? "brand" : p.enterprise ? "purple" : "outlineGlow"} className="w-full">
-                  Começar
-                </Button>
-              </a>
-            </div>
+            </AnimatedSection>
           ))}
         </div>
       </div>
@@ -361,64 +386,66 @@ function CTA() {
         <img src={ctaImg} alt="" aria-hidden width={1600} height={800} loading="lazy" className="w-full h-full object-cover opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-br from-secondary/70 via-background/85 to-primary/40" />
       </div>
-      <div className="relative mx-auto max-w-4xl px-6 text-center">
+      <AnimatedSection className="relative mx-auto max-w-4xl px-6 text-center">
         <h2 className="text-3xl sm:text-5xl font-bold">Transforme a Gestão de laboratórios da sua instituição</h2>
         <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
           Agendamento inteligente, Portal dos Responsáveis e comunicação escolar centralizada para aproximar escola e famílias.
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
           <a href={SIGNUP}>
-            <Button variant="brand" size="lg">Crie sua instituição gratuitamente <ArrowRight className="size-4" /></Button>
+            <Button variant="brand" size="lg" className="glow-pulse">Crie sua instituição gratuitamente <ArrowRight className="size-4" /></Button>
           </a>
           <a href={SIGNUP}>
             <Button variant="outlineGlow" size="lg">Já tenho conta</Button>
           </a>
         </div>
-      </div>
+      </AnimatedSection>
     </section>
   );
 }
 
 function Footer() {
   return (
-    <footer className="border-t border-border bg-card/30">
-      <div className="mx-auto max-w-7xl px-6 py-14 grid md:grid-cols-3 gap-10">
-        <div>
-          <div className="flex items-center gap-2 font-display font-bold">
-            <span className="inline-block size-7 rounded-md bg-gradient-brand glow-cyan" />
-            LAB <span className="text-gradient-brand">INTELLIGENCE</span>
+    <AnimatedSection>
+      <footer className="border-t border-border bg-card/30">
+        <div className="mx-auto max-w-7xl px-6 py-14 grid md:grid-cols-3 gap-10">
+          <div>
+            <div className="flex items-center gap-2 font-display font-bold">
+              <span className="inline-block size-7 rounded-md bg-gradient-brand glow-cyan" />
+              LAB <span className="text-gradient-brand">INTELLIGENCE</span>
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground max-w-sm">
+              Plataforma inteligente para gestão de laboratório, comunicação escolar e relacionamento com responsáveis.
+            </p>
+            <a href={SIGNUP} className="mt-4 inline-block text-sm text-primary hover:underline">
+              www.intelligencelab.com.br
+            </a>
           </div>
-          <p className="mt-3 text-sm text-muted-foreground max-w-sm">
-            Plataforma inteligente para gestão de laboratório, comunicação escolar e relacionamento com responsáveis.
-          </p>
-          <a href={SIGNUP} className="mt-4 inline-block text-sm text-primary hover:underline">
-            www.intelligencelab.com.br
-          </a>
+          <div>
+            <h4 className="text-sm font-semibold mb-4">Links úteis</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              {NAV.map((n) => (
+                <li key={n.href}><a href={n.href} className="hover:text-primary">{n.label}</a></li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold mb-4">Recursos</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2"><Calendar className="size-4 text-primary" /> Agendamento inteligente</li>
+              <li className="flex items-center gap-2"><BarChart3 className="size-4 text-primary" /> Relatórios em tempo real</li>
+              <li className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /> Portal dos Responsáveis</li>
+              <li className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /> Recados e comunicação com famílias</li>
+            </ul>
+          </div>
         </div>
-        <div>
-          <h4 className="text-sm font-semibold mb-4">Links úteis</h4>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            {NAV.map((n) => (
-              <li key={n.href}><a href={n.href} className="hover:text-primary">{n.label}</a></li>
-            ))}
-          </ul>
+        <div className="border-t border-border">
+          <div className="mx-auto max-w-7xl px-6 py-5 text-xs text-muted-foreground text-center">
+            © 2026 Plataforma Lab Intelligence. Todos os direitos reservados.
+          </div>
         </div>
-        <div>
-          <h4 className="text-sm font-semibold mb-4">Recursos</h4>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-center gap-2"><Calendar className="size-4 text-primary" /> Agendamento inteligente</li>
-            <li className="flex items-center gap-2"><BarChart3 className="size-4 text-primary" /> Relatórios em tempo real</li>
-            <li className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /> Portal dos Responsáveis</li>
-            <li className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /> Recados e comunicação com famílias</li>
-          </ul>
-        </div>
-      </div>
-      <div className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-6 py-5 text-xs text-muted-foreground text-center">
-          © 2026 Plataforma Lab Intelligence. Todos os direitos reservados.
-        </div>
-      </div>
-    </footer>
+      </footer>
+    </AnimatedSection>
   );
 }
 
@@ -439,19 +466,3 @@ function Landing() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
