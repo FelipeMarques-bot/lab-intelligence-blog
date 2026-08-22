@@ -1,9 +1,26 @@
-import { j as createMiddleware } from "./server-BkSh5JLl.js";
-import { r as renderErrorPage } from "./worker-entry-BchJXN-j.js";
-import "node:async_hooks";
-import "node:stream/web";
-import "node:stream";
+import { r as renderErrorPage } from "./worker-entry-CwaIzeLb.js";
 import "node:events";
+var createMiddleware = (options, __opts) => {
+  const resolvedOptions = {
+    type: "request",
+    ...__opts || options
+  };
+  return {
+    options: resolvedOptions,
+    middleware: (middleware) => {
+      return createMiddleware({}, Object.assign(resolvedOptions, { middleware }));
+    },
+    inputValidator: (inputValidator) => {
+      return createMiddleware({}, Object.assign(resolvedOptions, { inputValidator }));
+    },
+    client: (client) => {
+      return createMiddleware({}, Object.assign(resolvedOptions, { client }));
+    },
+    server: (server) => {
+      return createMiddleware({}, Object.assign(resolvedOptions, { server }));
+    }
+  };
+};
 function dedupeSerializationAdapters(deduped, serializationAdapters) {
   for (let i = 0, len = serializationAdapters.length; i < len; i++) {
     const current = serializationAdapters[i];

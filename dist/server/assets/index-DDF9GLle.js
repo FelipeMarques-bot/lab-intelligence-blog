@@ -1,5 +1,5 @@
-import { S as reactExports, J as jsxRuntimeExports, R as React, a as React$1 } from "./server-BkSh5JLl.js";
-import "./router-CVavlVw7.js";
+import { r as reactExports, T as jsxRuntimeExports, S as React, $ as React$1 } from "./server-DcGORJnL.js";
+import "./router-DKZjuCpy.js";
 import "node:async_hooks";
 import "node:stream/web";
 import "node:stream";
@@ -1430,27 +1430,15 @@ const createConfigUtils = (config) => ({
   cache: createLruCache(config.cacheSize),
   parseClassName: createParseClassName(config),
   sortModifiers: createSortModifiers(config),
-  postfixLookupClassGroupIds: createPostfixLookupClassGroupIds(config),
   ...createClassGroupUtils(config)
 });
-const createPostfixLookupClassGroupIds = (config) => {
-  const lookup = /* @__PURE__ */ Object.create(null);
-  const classGroupIds = config.postfixLookupClassGroups;
-  if (classGroupIds) {
-    for (let i = 0; i < classGroupIds.length; i++) {
-      lookup[classGroupIds[i]] = true;
-    }
-  }
-  return lookup;
-};
 const SPLIT_CLASSES_REGEX = /\s+/;
 const mergeClassList = (classList, configUtils) => {
   const {
     parseClassName,
     getClassGroupId,
     getConflictingClassGroupIds,
-    sortModifiers,
-    postfixLookupClassGroupIds
+    sortModifiers
   } = configUtils;
   const classGroupsInConflict = [];
   const classNames = classList.trim().split(SPLIT_CLASSES_REGEX);
@@ -1469,18 +1457,7 @@ const mergeClassList = (classList, configUtils) => {
       continue;
     }
     let hasPostfixModifier = !!maybePostfixModifierPosition;
-    let classGroupId;
-    if (hasPostfixModifier) {
-      const baseClassNameWithoutPostfix = baseClassName.substring(0, maybePostfixModifierPosition);
-      classGroupId = getClassGroupId(baseClassNameWithoutPostfix);
-      const classGroupIdWithPostfix = classGroupId && postfixLookupClassGroupIds[classGroupId] ? getClassGroupId(baseClassName) : void 0;
-      if (classGroupIdWithPostfix && classGroupIdWithPostfix !== classGroupId) {
-        classGroupId = classGroupIdWithPostfix;
-        hasPostfixModifier = false;
-      }
-    } else {
-      classGroupId = getClassGroupId(baseClassName);
-    }
+    let classGroupId = getClassGroupId(hasPostfixModifier ? baseClassName.substring(0, maybePostfixModifierPosition) : baseClassName);
     if (!classGroupId) {
       if (!hasPostfixModifier) {
         result = originalClassName + (result.length > 0 ? " " + result : result);
@@ -1595,7 +1572,6 @@ const isNever = () => false;
 const isShadow = (value) => shadowRegex.test(value);
 const isImage = (value) => imageRegex.test(value);
 const isAnyNonArbitrary = (value) => !isArbitraryValue(value) && !isArbitraryVariable(value);
-const isNamedContainerQuery = (value) => value.startsWith("@container") && (value[10] === "/" && value[11] !== void 0 || value[11] === "s" && value[16] !== void 0 && value.startsWith("-size/", 10) || value[11] === "n" && value[18] !== void 0 && value.startsWith("-normal/", 10));
 const isArbitrarySize = (value) => getIsArbitraryValue(value, isLabelSize, isNever);
 const isArbitraryValue = (value) => arbitraryValueRegex.test(value);
 const isArbitraryLength = (value) => getIsArbitraryValue(value, isLabelLength, isLengthOnly);
@@ -1774,18 +1750,6 @@ const getDefaultConfig = () => {
        * @deprecated since Tailwind CSS v4.0.0
        */
       container: ["container"],
-      /**
-       * Container Type
-       * @see https://tailwindcss.com/docs/responsive-design#container-queries
-       */
-      "container-type": [{
-        "@container": ["", "normal", "size", isArbitraryVariable, isArbitraryValue]
-      }],
-      /**
-       * Container Name
-       * @see https://tailwindcss.com/docs/responsive-design#named-containers
-       */
-      "container-named": [isNamedContainerQuery],
       /**
        * Columns
        * @see https://tailwindcss.com/docs/columns
@@ -2728,13 +2692,6 @@ const getDefaultConfig = () => {
        */
       indent: [{
         indent: scaleUnambiguousSpacing()
-      }],
-      /**
-       * Tab Size
-       * @see https://tailwindcss.com/docs/tab-size
-       */
-      "tab-size": [{
-        tab: [isInteger, isArbitraryVariable, isArbitraryValue]
       }],
       /**
        * Vertical Alignment
@@ -3961,13 +3918,6 @@ const getDefaultConfig = () => {
        * @see https://tailwindcss.com/docs/translate
        */
       "translate-none": ["translate-none"],
-      /**
-       * Zoom
-       * @see https://tailwindcss.com/docs/zoom
-       */
-      zoom: [{
-        zoom: [isInteger, isArbitraryVariable, isArbitraryValue]
-      }],
       // ---------------------
       // --- Interactivity ---
       // ---------------------
@@ -4033,34 +3983,6 @@ const getDefaultConfig = () => {
        */
       "scroll-behavior": [{
         scroll: ["auto", "smooth"]
-      }],
-      /**
-       * Scrollbar Thumb Color
-       * @see https://tailwindcss.com/docs/scrollbar-color
-       */
-      "scrollbar-thumb-color": [{
-        "scrollbar-thumb": scaleColor()
-      }],
-      /**
-       * Scrollbar Track Color
-       * @see https://tailwindcss.com/docs/scrollbar-color
-       */
-      "scrollbar-track-color": [{
-        "scrollbar-track": scaleColor()
-      }],
-      /**
-       * Scrollbar Gutter
-       * @see https://tailwindcss.com/docs/scrollbar-gutter
-       */
-      "scrollbar-gutter": [{
-        "scrollbar-gutter": ["auto", "stable", "both"]
-      }],
-      /**
-       * Scrollbar Width
-       * @see https://tailwindcss.com/docs/scrollbar-width
-       */
-      "scrollbar-w": [{
-        scrollbar: ["auto", "thin", "none"]
       }],
       /**
        * Scroll Margin
@@ -4320,7 +4242,6 @@ const getDefaultConfig = () => {
       }]
     },
     conflictingClassGroups: {
-      "container-named": ["container-type"],
       overflow: ["overflow-x", "overflow-y"],
       overscroll: ["overscroll-x", "overscroll-y"],
       inset: ["inset-x", "inset-y", "inset-bs", "inset-be", "start", "end", "top", "right", "bottom", "left"],
@@ -4373,7 +4294,6 @@ const getDefaultConfig = () => {
     conflictingClassGroupModifiers: {
       "font-size": ["leading"]
     },
-    postfixLookupClassGroups: ["container-type"],
     orderSensitiveModifiers: ["*", "**", "after", "backdrop", "before", "details-content", "file", "first-letter", "first-line", "marker", "placeholder", "selection"]
   };
 };
@@ -4583,6 +4503,7 @@ const Button = reactExports.forwardRef(
 );
 Button.displayName = "Button";
 const hero = "/assets/hero-ckfQ-LCj.jpg";
+const introVideo = "/assets/lab-intelligence-Cy-yRIWH.mp4";
 const adminImg = "/assets/admin-DlagH3ND.jpg";
 const teacherImg = "/assets/teacher-Cv43-kau.jpg";
 const studentImg = "/assets/student-DFSVGFpg.jpg";
@@ -4590,8 +4511,7 @@ const blog1 = "/assets/blog1-CMLj_9qz.jpg";
 const blog2 = "/assets/blog2-insj5gK3.jpg";
 const blog3 = "/assets/blog3-BteKteEw.jpg";
 const ctaImg = "/assets/cta-BadbS8Ip.jpg";
-const SITE = "https://www.intelligencelab.com.br";
-const SIGNUP = "https://www.intelligencelab.com.br/criar-instituicao";
+const SIGNUP = "https://www.intelligencelab.com.br/";
 const NAV = [{
   label: "Home",
   href: "#home"
@@ -4624,7 +4544,7 @@ function Header() {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "hidden md:flex items-center gap-7 text-sm text-muted-foreground", children: NAV.map((n) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: n.href, className: "hover:text-primary transition-colors", children: n.label }, n.href)) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: SITE, target: "_blank", rel: "noopener noreferrer", className: "hidden sm:inline-flex", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "brand", size: "sm", children: "Entrar" }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: SIGNUP, className: "hidden sm:inline-flex", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "brand", size: "sm", children: "Entrar" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setOpen(!open), className: "md:hidden p-2 text-muted-foreground", "aria-label": "Menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Menu, { className: "size-5" }) })
       ] })
     ] }),
@@ -4643,7 +4563,7 @@ function Hero() {
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-gradient-brand", children: "laboratórios" }),
         " com visão em tempo real"
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-6 text-lg text-muted-foreground max-w-xl", children: "Descubra como escolas e universidades transformam a gestão de laboratórios — agendamento simples, relatórios poderosos e operação sem conflitos." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-6 text-lg text-muted-foreground max-w-xl", children: "Descubra como escolas e universidades transformam a Gestão de laboratórios em agendamento simples, relatórios poderosos e operação sem conflitos." }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-8 flex flex-wrap gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#blog", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "brand", size: "lg", children: [
           "Leia as histórias de sucesso ",
@@ -4668,18 +4588,18 @@ function Hero() {
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative animate-fade-up", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -inset-6 bg-gradient-brand opacity-20 blur-3xl rounded-full" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative rounded-2xl overflow-hidden border-glow", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: hero, alt: "Professores e alunos em laboratório de tecnologia", width: 1600, height: 1e3, className: "w-full h-auto" }) })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative rounded-2xl overflow-hidden border-glow", children: /* @__PURE__ */ jsxRuntimeExports.jsx("video", { src: introVideo, poster: hero, autoPlay: true, muted: true, loop: true, playsInline: true, controls: true, preload: "auto", "aria-label": "Vídeo de apresentação da Lab Intelligence", className: "w-full aspect-video h-auto block bg-background object-cover" }) })
     ] })
   ] }) });
 }
 const ROLES = [{
-  icon: "👨‍💼",
+  icon: "🧑‍💼",
   title: "Administrador: Controle Total",
   img: adminImg,
   desc: "Gerencie professores, recursos, turmas e disciplinas em um único painel. Veja em tempo real quantos agendamentos existem, quantos professores estão cadastrados e quais recursos estão disponíveis.",
-  items: ["Cadastro de professores", "Gerenciamento de recursos (laboratórios, equipamentos)", "Criação de turmas e disciplinas", "Link exclusivo para onboarding de professores", "Relatórios e exportação de dados", "Upgrade de plano conforme crescimento"]
+  items: ["Cadastro de professores", "Gerenciamento de recursos (laboratórios, equipamentos)", "Criação de turmas e disciplinas", "Link exclusivo para onboarding de professores", "relatórios e exportação de dados", "Upgrade de plano conforme crescimento"]
 }, {
-  icon: "👨‍🏫",
+  icon: "🧑‍🏫",
   title: "Professor: Agendar com Facilidade",
   img: teacherImg,
   desc: "Professores acessam com Google Login e agendam laboratórios em segundos. Sincronize automaticamente com Google Calendar para nunca perder um agendamento.",
@@ -4735,10 +4655,10 @@ function Blog() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "blog", className: "py-24 bg-card/30 border-y border-border", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto max-w-7xl px-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center max-w-2xl mx-auto", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-3xl sm:text-4xl font-bold", children: [
-        "Histórias de ",
+        "histórias de ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-gradient-brand", children: "Sucesso" })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-4 text-muted-foreground", children: "Veja como escolas reais transformaram a gestão de laboratórios." })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-4 text-muted-foreground", children: "Veja como escolas reais transformaram a Gestão de laboratórios." })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-14 grid md:grid-cols-3 gap-6", children: POSTS.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "group rounded-2xl bg-card border border-border hover:border-glow hover:-translate-y-1 transition-all overflow-hidden flex flex-col", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "aspect-[16/10] overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: p.img, alt: p.title, loading: "lazy", width: 800, height: 500, className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" }) }),
@@ -4750,8 +4670,8 @@ function Blog() {
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "mt-3 text-lg font-semibold leading-snug", children: p.title }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 text-sm text-muted-foreground flex-1", children: p.summary }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: SITE, target: "_blank", rel: "noopener noreferrer", className: "mt-5 inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:gap-2.5 transition-all", children: [
-          "Leia a história completa ",
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: SIGNUP, className: "mt-5 inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:gap-2.5 transition-all", children: [
+          "Tenha essa experiência também ",
           /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "size-4" })
         ] })
       ] })
@@ -4760,13 +4680,13 @@ function Blog() {
 }
 const FAQS = [{
   q: "Como funciona o login dos professores?",
-  a: "Professores fazem login com Google. É rápido, seguro e sem necessidade de criar nova senha. O administrador compartilha um link exclusivo para onboarding."
+  a: "Professores fazem login com Google (ainda em construção). É rápido, seguro e sem necessidade de criar nova senha. O administrador compartilha um link exclusivo para onboarding."
 }, {
   q: "Posso sincronizar com Google Calendar?",
-  a: "Sim! Quando um professor agenda um laboratório, o evento aparece automaticamente no Google Calendar. Sincronização bidirecional para máxima conveniência."
+  a: "Sim! Quando um professor agenda um laboratório, o evento aparece automaticamente no Google Calendar. Sincronização bidirecional para máxima conveniência (ainda em construção)."
 }, {
   q: "Como funciona o agendamento de laboratórios?",
-  a: "O professor acessa a plataforma, seleciona o laboratório desejado, escolhe a data e horário disponível, e confirma. O sistema valida conflitos automaticamente."
+  a: "O professor acessa a plataforma, seleciona o laboratório desejado, escolhe a data e horário disponí­vel, e confirma. O sistema valida conflitos automaticamente."
 }, {
   q: "Quais informações o administrador consegue ver?",
   a: "Dashboard completo com: total de agendamentos, número de professores cadastrados, recursos disponíveis, turmas criadas, e relatórios detalhados para exportação."
@@ -4781,9 +4701,9 @@ const FAQS = [{
   a: "Sim! Organize turmas por disciplina, semestre e professor. Isso ajuda a manter agendamentos consistentes e facilita relatórios por área."
 }, {
   q: "Como exporto relatórios de uso?",
-  a: "Na seção 'Relatórios', você pode gerar relatórios em PDF ou Excel com dados de agendamentos, uso de recursos, professores mais ativos, etc."
+  a: "Na seção 'relatórios', você pode gerar relatórios em PDF ou Excel com dados de agendamentos, uso de recursos, professores mais ativos, etc."
 }, {
-  q: "Existe período de teste antes de assinar?",
+  q: "Existe perí­odo de teste antes de assinar?",
   a: "Sim! 30 dias de teste gratuito sem necessidade de cartão de crédito. Teste todas as funcionalidades antes de escolher seu plano."
 }, {
   q: "Qual plano é ideal para minha instituição?",
@@ -4801,7 +4721,7 @@ function FAQ() {
     ] }, i)) })
   ] }) });
 }
-const COMPARE = [["Agendamentos por email/planilha", "Agendamentos centralizados"], ["Conflitos de horário frequentes", "Sistema valida conflitos"], ["Professores não sabem disponibilidade", "Visibilidade em tempo real"], ["Difícil rastrear uso de recursos", "Relatórios detalhados"], ["Sem integração com calendário", "Sincroniza com Google Calendar"], ["Acesso apenas no computador", "Funciona em mobile e desktop"], ["Sem controle de acesso", "Segurança por autenticação"], ["Dados espalhados em vários lugares", "Tudo centralizado e organizado"]];
+const COMPARE = [["Agendamentos por email/planilha", "Agendamentos centralizados"], ["Conflitos de horário frequentes", "Sistema valida conflitos"], ["Professores não sabem disponibilidade", "Visibilidade em tempo real"], ["Difí­cil rastrear uso de recursos", "relatórios detalhados"], ["Sem integração com calendário", "Sincroniza com Google Calendar"], ["Acesso apenas no computador", "Funciona em mobile e desktop"], ["Sem controle de acesso", "Segurança por autenticação"], ["Dados espalhados em vários lugares", "Tudo centralizado e organizado"]];
 function Compare() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-24 bg-card/30 border-y border-border", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto max-w-6xl px-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-3xl sm:text-4xl font-bold", children: [
@@ -4812,7 +4732,7 @@ function Compare() {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-2xl bg-card border border-border p-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4", children: "Antes" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "space-y-3", children: COMPARE.map(([a]) => /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-3 text-sm", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-destructive", children: "✕" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-destructive", children: "✖" }),
           " ",
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-muted-foreground", children: a })
         ] }, a)) })
@@ -4840,16 +4760,16 @@ const PLANS = [{
   name: "STARTER",
   price: "R$ 59,32",
   popular: true,
-  features: ["50 professores", "10 laboratórios", "Suporte prioritário", "Relatórios avançados"]
+  features: ["50 professores", "10 laboratórios", "Suporte prioritário", "relatórios avançados"]
 }, {
   name: "PROFESSIONAL",
   price: "R$ 179,16",
-  features: ["500 professores", "Laboratórios ilimitados", "Suporte 24/7", "Integrações customizadas"]
+  features: ["500 professores", "laboratórios ilimitados", "Suporte 24/7", "Integrações customizadas"]
 }, {
   name: "ENTERPRISE",
   price: "R$ 209,62",
   enterprise: true,
-  features: ["Professores ilimitados", "Laboratórios ilimitados", "Suporte dedicado", "SLA garantido"]
+  features: ["Professores ilimitados", "laboratórios ilimitados", "Suporte dedicado", "SLA garantido"]
 }];
 function Pricing() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "pricing", className: "py-24", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mx-auto max-w-7xl px-6", children: [
@@ -4872,7 +4792,7 @@ function Pricing() {
         " ",
         f
       ] }, f)) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: SIGNUP, target: "_blank", rel: "noopener noreferrer", className: "mt-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: p.popular ? "brand" : p.enterprise ? "purple" : "outlineGlow", className: "w-full", children: "Começar" }) })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: SIGNUP, className: "mt-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: p.popular ? "brand" : p.enterprise ? "purple" : "outlineGlow", className: "w-full", children: "Começar" }) })
     ] }, p.name)) })
   ] }) });
 }
@@ -4883,14 +4803,14 @@ function CTA() {
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-br from-secondary/70 via-background/85 to-primary/40" })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative mx-auto max-w-4xl px-6 text-center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl sm:text-5xl font-bold", children: "Transforme a gestão de laboratórios da sua instituição" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl sm:text-5xl font-bold", children: "Transforme a Gestão de laboratórios da sua instituição" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-5 text-lg text-muted-foreground max-w-2xl mx-auto", children: "Período de teste, onboarding rápido e operação inteligente para equipes acadêmicas." }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-9 flex flex-wrap justify-center gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: SIGNUP, target: "_blank", rel: "noopener noreferrer", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "brand", size: "lg", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: SIGNUP, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "brand", size: "lg", children: [
           "Crie sua instituição gratuitamente ",
           /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "size-4" })
         ] }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: SITE, target: "_blank", rel: "noopener noreferrer", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outlineGlow", size: "lg", children: "Já tenho conta" }) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: SIGNUP, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "outlineGlow", size: "lg", children: "Já tenho conta" }) })
       ] })
     ] })
   ] });
@@ -4904,8 +4824,8 @@ function Footer() {
           "LAB ",
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-gradient-brand", children: "INTELLIGENCE" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 text-sm text-muted-foreground max-w-sm", children: "Plataforma inteligente para gestão de laboratórios educacionais." }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: SITE, target: "_blank", rel: "noopener noreferrer", className: "mt-4 inline-block text-sm text-primary hover:underline", children: "www.intelligencelab.com.br" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 text-sm text-muted-foreground max-w-sm", children: "Plataforma inteligente para Gestão de laboratórios educacionais." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: SIGNUP, className: "mt-4 inline-block text-sm text-primary hover:underline", children: "www.intelligencelab.com.br" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-sm font-semibold mb-4", children: "Links úteis" }),
@@ -4920,7 +4840,7 @@ function Footer() {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(ChartColumn, { className: "size-4 text-primary" }),
-            " Relatórios em tempo real"
+            " relatórios em tempo real"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "size-4 text-primary" }),

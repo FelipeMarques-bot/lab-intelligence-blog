@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Sparkles, Calendar, BarChart3, Menu, ArrowRight, Star } from "lucide-react";
 import { useState } from "react";
 import hero from "@/assets/hero.jpg";
+import introVideo from "@/assets/lab-intelligence.mp4";
 import adminImg from "@/assets/admin.jpg";
 import teacherImg from "@/assets/teacher.jpg";
 import studentImg from "@/assets/student.jpg";
@@ -116,7 +117,18 @@ function Hero() {
         <AnimatedSection delay={200} className="relative">
           <div className="absolute -inset-6 bg-gradient-brand opacity-20 blur-3xl rounded-full" />
           <div className="relative rounded-2xl overflow-hidden border-glow">
-            <img src={hero} alt="Professores e alunos em laboratório de tecnologia" width={1600} height={1000} className="w-full h-auto" />
+            <video
+              src={introVideo}
+              poster={hero}
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls
+              preload="auto"
+              aria-label="Vídeo de apresentação da Lab Intelligence"
+              className="w-full aspect-video h-auto block bg-background object-cover"
+            />
           </div>
         </AnimatedSection>
       </div>

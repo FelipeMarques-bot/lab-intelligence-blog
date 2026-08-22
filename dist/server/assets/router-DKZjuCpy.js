@@ -1,4 +1,4 @@
-import { S as reactExports, F as isPromise, G as isRedirect, E as isNotFound, A as invariant, h as createControlledPromise, _ as rootRouteId, H as isServer$1, v as functionalUpdate$1, c as arraysEqual, i as createLRUCache, f as compileDecodeCharMap, a0 as trimPath, Z as rewriteBasepath, g as composeRewrites, Q as processRouteTree, P as processRouteMasks, Y as resolvePath, e as cleanPath, a2 as trimPathRight, N as parseHref, q as executeRewriteInput, B as isDangerousProtocol, T as redirect, u as findSingleMatch, l as deepEqual, D as DEFAULT_PROTOCOL_ALLOWLIST, d as buildRouteBranch, z as interpolatePath, M as nullReplaceEqualDeep, V as replaceEqualDeep$1, K as last, k as decodePath, s as findFlatMatch, t as findRouteMatch, y as hasKeys, r as executeRewriteOutput, n as encodePathLikeUrl, a1 as trimPathLeft, I as joinPaths, a4 as useRouter, m as dummyMatchContext, L as matchContext, W as requireReactDom, p as exactPathTest, U as removeTrailingSlash, R as React, J as jsxRuntimeExports, C as isModuleNotFoundError, a3 as useHydrated, o as escapeHtml, w as getAssetCrossOrigin, x as getScriptPreloadAttrs, b as appendUniqueUserTags, X as resolveManifestCssLink, O as Outlet } from "./server-BkSh5JLl.js";
+import { r as reactExports, f as functionalUpdate$1, a as arraysEqual, c as createLRUCache, i as isPromise, b as isRedirect, d as isNotFound, e as invariant, g as createControlledPromise, h as rootRouteId, j as isServer$1, k as compileDecodeCharMap, t as trimPath, l as rewriteBasepath, m as composeRewrites, p as processRouteTree, n as processRouteMasks, o as resolvePath, q as cleanPath, s as trimPathRight, u as parseHref, v as executeRewriteInput, w as isDangerousProtocol, x as redirect, y as findSingleMatch, z as deepEqual, D as DEFAULT_PROTOCOL_ALLOWLIST, A as interpolatePath, B as nullReplaceEqualDeep, C as replaceEqualDeep$1, E as last, F as decodePath, G as findFlatMatch, H as findRouteMatch, I as executeRewriteOutput, J as encodePathLikeUrl, K as trimPathLeft, L as joinPaths, M as useRouter, N as dummyMatchContext, O as matchContext, P as requireReactDom, Q as exactPathTest, R as removeTrailingSlash, S as React, T as jsxRuntimeExports, U as isModuleNotFoundError, V as useHydrated, W as escapeHtml, X as isInlinableStylesheet, Y as getAssetCrossOrigin, Z as resolveManifestAssetLink, _ as Outlet } from "./server-DcGORJnL.js";
 import "node:async_hooks";
 import "node:stream/web";
 import "node:stream";
@@ -33,8 +33,8 @@ function decode(str) {
   }
   return result;
 }
-const defaultParseSearch = parseSearchWith(JSON.parse);
-const defaultStringifySearch = stringifySearchWith(JSON.stringify, JSON.parse);
+var defaultParseSearch = parseSearchWith(JSON.parse);
+var defaultStringifySearch = stringifySearchWith(JSON.stringify, JSON.parse);
 function parseSearchWith(parser) {
   return (searchStr) => {
     if (searchStr[0] === "?") searchStr = searchStr.substring(1);
@@ -68,16 +68,153 @@ function stringifySearchWith(stringify, parser) {
     return searchStr ? `?${searchStr}` : "";
   };
 }
-const triggerOnReady = (inner) => {
+function createNonReactiveMutableStore(initialValue) {
+  let value = initialValue;
+  return {
+    get() {
+      return value;
+    },
+    set(nextOrUpdater) {
+      value = functionalUpdate$1(nextOrUpdater, value);
+    }
+  };
+}
+function createNonReactiveReadonlyStore(read) {
+  return { get() {
+    return read();
+  } };
+}
+function createRouterStores(initialState, config) {
+  const { createMutableStore, createReadonlyStore, batch, init } = config;
+  const matchStores = /* @__PURE__ */ new Map();
+  const pendingMatchStores = /* @__PURE__ */ new Map();
+  const cachedMatchStores = /* @__PURE__ */ new Map();
+  const status = createMutableStore(initialState.status);
+  const loadedAt = createMutableStore(initialState.loadedAt);
+  const isLoading = createMutableStore(initialState.isLoading);
+  const isTransitioning = createMutableStore(initialState.isTransitioning);
+  const location = createMutableStore(initialState.location);
+  const resolvedLocation = createMutableStore(initialState.resolvedLocation);
+  const statusCode = createMutableStore(initialState.statusCode);
+  const redirect2 = createMutableStore(initialState.redirect);
+  const matchesId = createMutableStore([]);
+  const pendingIds = createMutableStore([]);
+  const cachedIds = createMutableStore([]);
+  const matches = createReadonlyStore(() => readPoolMatches(matchStores, matchesId.get()));
+  const pendingMatches = createReadonlyStore(() => readPoolMatches(pendingMatchStores, pendingIds.get()));
+  const cachedMatches = createReadonlyStore(() => readPoolMatches(cachedMatchStores, cachedIds.get()));
+  const firstId = createReadonlyStore(() => matchesId.get()[0]);
+  const hasPending = createReadonlyStore(() => matchesId.get().some((matchId) => {
+    return matchStores.get(matchId)?.get().status === "pending";
+  }));
+  const matchRouteDeps = createReadonlyStore(() => ({
+    locationHref: location.get().href,
+    resolvedLocationHref: resolvedLocation.get()?.href,
+    status: status.get()
+  }));
+  const __store = createReadonlyStore(() => ({
+    status: status.get(),
+    loadedAt: loadedAt.get(),
+    isLoading: isLoading.get(),
+    isTransitioning: isTransitioning.get(),
+    matches: matches.get(),
+    location: location.get(),
+    resolvedLocation: resolvedLocation.get(),
+    statusCode: statusCode.get(),
+    redirect: redirect2.get()
+  }));
+  const matchStoreByRouteIdCache = createLRUCache(64);
+  function getRouteMatchStore(routeId) {
+    let cached = matchStoreByRouteIdCache.get(routeId);
+    if (!cached) {
+      cached = createReadonlyStore(() => {
+        const ids = matchesId.get();
+        for (const id of ids) {
+          const matchStore = matchStores.get(id);
+          if (matchStore && matchStore.routeId === routeId) return matchStore.get();
+        }
+      });
+      matchStoreByRouteIdCache.set(routeId, cached);
+    }
+    return cached;
+  }
+  const store = {
+    status,
+    loadedAt,
+    isLoading,
+    isTransitioning,
+    location,
+    resolvedLocation,
+    statusCode,
+    redirect: redirect2,
+    matchesId,
+    pendingIds,
+    cachedIds,
+    matches,
+    pendingMatches,
+    cachedMatches,
+    firstId,
+    hasPending,
+    matchRouteDeps,
+    matchStores,
+    pendingMatchStores,
+    cachedMatchStores,
+    __store,
+    getRouteMatchStore,
+    setMatches,
+    setPending,
+    setCached
+  };
+  setMatches(initialState.matches);
+  init?.(store);
+  function setMatches(nextMatches) {
+    reconcileMatchPool(nextMatches, matchStores, matchesId, createMutableStore, batch);
+  }
+  function setPending(nextMatches) {
+    reconcileMatchPool(nextMatches, pendingMatchStores, pendingIds, createMutableStore, batch);
+  }
+  function setCached(nextMatches) {
+    reconcileMatchPool(nextMatches, cachedMatchStores, cachedIds, createMutableStore, batch);
+  }
+  return store;
+}
+function readPoolMatches(pool, ids) {
+  const matches = [];
+  for (const id of ids) {
+    const matchStore = pool.get(id);
+    if (matchStore) matches.push(matchStore.get());
+  }
+  return matches;
+}
+function reconcileMatchPool(nextMatches, pool, idStore, createMutableStore, batch) {
+  const nextIds = nextMatches.map((d) => d.id);
+  const nextIdSet = new Set(nextIds);
+  batch(() => {
+    for (const id of pool.keys()) if (!nextIdSet.has(id)) pool.delete(id);
+    for (const nextMatch of nextMatches) {
+      const existing = pool.get(nextMatch.id);
+      if (!existing) {
+        const matchStore = createMutableStore(nextMatch);
+        matchStore.routeId = nextMatch.routeId;
+        pool.set(nextMatch.id, matchStore);
+        continue;
+      }
+      existing.routeId = nextMatch.routeId;
+      if (existing.get() !== nextMatch) existing.set(nextMatch);
+    }
+    if (!arraysEqual(idStore.get(), nextIds)) idStore.set(nextIds);
+  });
+}
+var triggerOnReady = (inner) => {
   if (!inner.rendered) {
     inner.rendered = true;
     return inner.onReady?.();
   }
 };
-const resolvePreload = (inner, matchId) => {
+var resolvePreload = (inner, matchId) => {
   return !!(inner.preload && !inner.router.stores.matchStores.has(matchId));
 };
-const buildMatchContext = (inner, index, includeCurrentMatch = true) => {
+var buildMatchContext = (inner, index, includeCurrentMatch = true) => {
   const context = { ...inner.router.options.context ?? {} };
   const end = includeCurrentMatch ? index : index - 1;
   for (let i = 0; i <= end; i++) {
@@ -89,7 +226,7 @@ const buildMatchContext = (inner, index, includeCurrentMatch = true) => {
   }
   return context;
 };
-const getNotFoundBoundaryIndex = (inner, err) => {
+var getNotFoundBoundaryIndex = (inner, err) => {
   if (!inner.matches.length) return;
   const requestedRouteId = err.routeId;
   const matchedRootIndex = inner.matches.findIndex((m) => m.routeId === inner.router.routeTree.id);
@@ -102,7 +239,7 @@ const getNotFoundBoundaryIndex = (inner, err) => {
   }
   return requestedRouteId ? startIndex : rootIndex;
 };
-const handleRedirectAndNotFound = (inner, match, err) => {
+var handleRedirectAndNotFound = (inner, match, err) => {
   if (!isRedirect(err) && !isNotFound(err)) return;
   if (isRedirect(err) && err.redirectHandled && !err.options.reloadDocument) throw err;
   if (match) {
@@ -129,13 +266,13 @@ const handleRedirectAndNotFound = (inner, match, err) => {
   }
   throw err;
 };
-const shouldSkipLoader = (inner, matchId) => {
+var shouldSkipLoader = (inner, matchId) => {
   const match = inner.router.getMatch(matchId);
   if (!match) return true;
   if (match.ssr === false) return true;
   return false;
 };
-const syncMatchContext = (inner, matchId, index) => {
+var syncMatchContext = (inner, matchId, index) => {
   const nextContext = buildMatchContext(inner, index);
   inner.updateMatch(matchId, (prev) => {
     return {
@@ -144,7 +281,7 @@ const syncMatchContext = (inner, matchId, index) => {
     };
   });
 };
-const handleSerialError = (inner, index, err, routerCode) => {
+var handleSerialError = (inner, index, err, routerCode) => {
   const { id: matchId, routeId } = inner.matches[index];
   const route = inner.router.looseRoutesById[routeId];
   if (err instanceof Promise) throw err;
@@ -172,7 +309,7 @@ const handleSerialError = (inner, index, err, routerCode) => {
   });
   if (!inner.preload && !isRedirect(err) && !isNotFound(err)) inner.serialError ??= err;
 };
-const isBeforeLoadSsr = (inner, matchId, index, route) => {
+var isBeforeLoadSsr = (inner, matchId, index, route) => {
   const existingMatch = inner.router.getMatch(matchId);
   const parentMatchId = inner.matches[index - 1]?.id;
   const parentMatch = parentMatchId ? inner.router.getMatch(parentMatchId) : void 0;
@@ -220,7 +357,7 @@ const isBeforeLoadSsr = (inner, matchId, index, route) => {
   });
   existingMatch.ssr = parentOverride(tempSsr ?? defaultSsr);
 };
-const setupPendingTimeout = (inner, matchId, route, match) => {
+var setupPendingTimeout = (inner, matchId, route, match) => {
   if (match._nonReactive.pendingTimeout !== void 0) return;
   const pendingMs = route.options.pendingMs ?? inner.router.options.defaultPendingMs;
   if (!!(inner.onReady && false)) {
@@ -230,7 +367,7 @@ const setupPendingTimeout = (inner, matchId, route, match) => {
     match._nonReactive.pendingTimeout = pendingTimeout;
   }
 };
-const preBeforeLoadSetup = (inner, matchId, route) => {
+var preBeforeLoadSetup = (inner, matchId, route) => {
   const existingMatch = inner.router.getMatch(matchId);
   if (!existingMatch._nonReactive.beforeLoadPromise && !existingMatch._nonReactive.loaderPromise) return;
   setupPendingTimeout(inner, matchId, route, existingMatch);
@@ -240,7 +377,7 @@ const preBeforeLoadSetup = (inner, matchId, route) => {
   };
   return existingMatch._nonReactive.beforeLoadPromise ? existingMatch._nonReactive.beforeLoadPromise.then(then) : then();
 };
-const executeBeforeLoad = (inner, matchId, index, route) => {
+var executeBeforeLoad = (inner, matchId, index, route) => {
   const match = inner.router.getMatch(matchId);
   let prevLoadPromise = match._nonReactive.loadPromise;
   match._nonReactive.loadPromise = createControlledPromise(() => {
@@ -338,7 +475,7 @@ const executeBeforeLoad = (inner, matchId, index, route) => {
   }
   updateContext(beforeLoadContext);
 };
-const handleBeforeLoad = (inner, index) => {
+var handleBeforeLoad = (inner, index) => {
   const { id: matchId, routeId } = inner.matches[index];
   const route = inner.router.looseRoutesById[routeId];
   const serverSsr = () => {
@@ -356,7 +493,7 @@ const handleBeforeLoad = (inner, index) => {
   };
   return serverSsr();
 };
-const executeHead = (inner, matchId, route) => {
+var executeHead = (inner, matchId, route) => {
   const match = inner.router.getMatch(matchId);
   if (!match) return;
   if (!route.options.head && !route.options.scripts && !route.options.headers) return;
@@ -382,7 +519,7 @@ const executeHead = (inner, matchId, route) => {
     };
   });
 };
-const getLoaderContext = (inner, matchPromises, matchId, index, route) => {
+var getLoaderContext = (inner, matchPromises, matchId, index, route) => {
   const parentMatchPromise = matchPromises[index - 1];
   const { params, loaderDeps, abortController, cause } = inner.router.getMatch(matchId);
   const context = buildMatchContext(inner, index);
@@ -404,7 +541,7 @@ const getLoaderContext = (inner, matchPromises, matchId, index, route) => {
     ...inner.router.options.additionalContext
   };
 };
-const runLoader = async (inner, matchPromises, matchId, index, route) => {
+var runLoader = async (inner, matchPromises, matchId, index, route) => {
   try {
     const match = inner.router.getMatch(matchId);
     try {
@@ -478,7 +615,7 @@ const runLoader = async (inner, matchPromises, matchId, index, route) => {
     handleRedirectAndNotFound(inner, match, err);
   }
 };
-const loadRouteMatch = async (inner, matchPromises, index) => {
+var loadRouteMatch = async (inner, matchPromises, index) => {
   async function handleLoader(preload, prevMatch, previousRouteMatchId, match2, route2) {
     const age = Date.now() - prevMatch.updatedAt;
     const staleAge = preload ? route2.options.preloadStaleTime ?? inner.router.options.defaultPreloadStaleTime ?? 3e4 : route2.options.staleTime ?? inner.router.options.defaultStaleTime ?? 0;
@@ -697,149 +834,12 @@ function routeNeedsPreload(route) {
   for (const componentType of componentTypes) if (route.options[componentType]?.preload) return true;
   return false;
 }
-const componentTypes = [
+var componentTypes = [
   "component",
   "errorComponent",
   "pendingComponent",
   "notFoundComponent"
 ];
-function createNonReactiveMutableStore(initialValue) {
-  let value = initialValue;
-  return {
-    get() {
-      return value;
-    },
-    set(nextOrUpdater) {
-      value = functionalUpdate$1(nextOrUpdater, value);
-    }
-  };
-}
-function createNonReactiveReadonlyStore(read) {
-  return { get() {
-    return read();
-  } };
-}
-function createRouterStores(initialState, config) {
-  const { createMutableStore, createReadonlyStore, batch, init } = config;
-  const matchStores = /* @__PURE__ */ new Map();
-  const pendingMatchStores = /* @__PURE__ */ new Map();
-  const cachedMatchStores = /* @__PURE__ */ new Map();
-  const status = createMutableStore(initialState.status);
-  const loadedAt = createMutableStore(initialState.loadedAt);
-  const isLoading = createMutableStore(initialState.isLoading);
-  const isTransitioning = createMutableStore(initialState.isTransitioning);
-  const location = createMutableStore(initialState.location);
-  const resolvedLocation = createMutableStore(initialState.resolvedLocation);
-  const statusCode = createMutableStore(initialState.statusCode);
-  const redirect2 = createMutableStore(initialState.redirect);
-  const matchesId = createMutableStore([]);
-  const pendingIds = createMutableStore([]);
-  const cachedIds = createMutableStore([]);
-  const matches = createReadonlyStore(() => readPoolMatches(matchStores, matchesId.get()));
-  const pendingMatches = createReadonlyStore(() => readPoolMatches(pendingMatchStores, pendingIds.get()));
-  const cachedMatches = createReadonlyStore(() => readPoolMatches(cachedMatchStores, cachedIds.get()));
-  const firstId = createReadonlyStore(() => matchesId.get()[0]);
-  const hasPending = createReadonlyStore(() => matchesId.get().some((matchId) => {
-    return matchStores.get(matchId)?.get().status === "pending";
-  }));
-  const matchRouteDeps = createReadonlyStore(() => ({
-    locationHref: location.get().href,
-    resolvedLocationHref: resolvedLocation.get()?.href,
-    status: status.get()
-  }));
-  const __store = createReadonlyStore(() => ({
-    status: status.get(),
-    loadedAt: loadedAt.get(),
-    isLoading: isLoading.get(),
-    isTransitioning: isTransitioning.get(),
-    matches: matches.get(),
-    location: location.get(),
-    resolvedLocation: resolvedLocation.get(),
-    statusCode: statusCode.get(),
-    redirect: redirect2.get()
-  }));
-  const matchStoreByRouteIdCache = createLRUCache(64);
-  function getRouteMatchStore(routeId) {
-    let cached = matchStoreByRouteIdCache.get(routeId);
-    if (!cached) {
-      cached = createReadonlyStore(() => {
-        const ids = matchesId.get();
-        for (const id of ids) {
-          const matchStore = matchStores.get(id);
-          if (matchStore && matchStore.routeId === routeId) return matchStore.get();
-        }
-      });
-      matchStoreByRouteIdCache.set(routeId, cached);
-    }
-    return cached;
-  }
-  const store = {
-    status,
-    loadedAt,
-    isLoading,
-    isTransitioning,
-    location,
-    resolvedLocation,
-    statusCode,
-    redirect: redirect2,
-    matchesId,
-    pendingIds,
-    cachedIds,
-    matches,
-    pendingMatches,
-    cachedMatches,
-    firstId,
-    hasPending,
-    matchRouteDeps,
-    matchStores,
-    pendingMatchStores,
-    cachedMatchStores,
-    __store,
-    getRouteMatchStore,
-    setMatches,
-    setPending,
-    setCached
-  };
-  setMatches(initialState.matches);
-  init?.(store);
-  function setMatches(nextMatches) {
-    reconcileMatchPool(nextMatches, matchStores, matchesId, createMutableStore, batch);
-  }
-  function setPending(nextMatches) {
-    reconcileMatchPool(nextMatches, pendingMatchStores, pendingIds, createMutableStore, batch);
-  }
-  function setCached(nextMatches) {
-    reconcileMatchPool(nextMatches, cachedMatchStores, cachedIds, createMutableStore, batch);
-  }
-  return store;
-}
-function readPoolMatches(pool, ids) {
-  const matches = [];
-  for (const id of ids) {
-    const matchStore = pool.get(id);
-    if (matchStore) matches.push(matchStore.get());
-  }
-  return matches;
-}
-function reconcileMatchPool(nextMatches, pool, idStore, createMutableStore, batch) {
-  const nextIds = nextMatches.map((d) => d.id);
-  const nextIdSet = new Set(nextIds);
-  batch(() => {
-    for (const id of pool.keys()) if (!nextIdSet.has(id)) pool.delete(id);
-    for (const nextMatch of nextMatches) {
-      const existing = pool.get(nextMatch.id);
-      if (!existing) {
-        const matchStore = createMutableStore(nextMatch);
-        matchStore.routeId = nextMatch.routeId;
-        pool.set(nextMatch.id, matchStore);
-        continue;
-      }
-      existing.routeId = nextMatch.routeId;
-      if (existing.get() !== nextMatch) existing.set(nextMatch);
-    }
-    if (!arraysEqual(idStore.get(), nextIds)) idStore.set(nextIds);
-  });
-}
 function getLocationChangeInfo(location, resolvedLocation) {
   const fromLocation = resolvedLocation;
   const toLocation = location;
@@ -851,7 +851,6 @@ function getLocationChangeInfo(location, resolvedLocation) {
     hashChanged: fromLocation?.hash !== toLocation.hash
   };
 }
-const locationHistoryActions = /* @__PURE__ */ new WeakMap();
 var RouterCore = class {
   /**
   * @deprecated Use the `createRouter` function instead
@@ -864,7 +863,6 @@ var RouterCore = class {
     this.subscribers = /* @__PURE__ */ new Set();
     this.isScrollRestoring = false;
     this.isScrollRestorationSetup = false;
-    this.routeBranchCache = /* @__PURE__ */ new WeakMap();
     this.startTransition = (fn) => fn();
     this.update = (newOptions) => {
       const prevOptions = this.options;
@@ -920,7 +918,7 @@ var RouterCore = class {
         needsLocationUpdate = true;
       }
       if (needsLocationUpdate && this.stores) this.stores.location.set(this.latestLocation);
-      if (typeof window !== "undefined" && "CSS" in window && typeof window.CSS?.supports === "function") this.isViewTransitionTypesSupported = window.CSS.supports("selector(:active-view-transition-type(a))");
+      if (typeof window !== "undefined" && "CSS" in window && typeof window.CSS?.supports === "function") this.isViewTransitionTypesSupported = window.CSS.supports("selector(:active-view-transition-type(a)");
     };
     this.updateLatestLocation = () => {
       this.latestLocation = this.parseLocation(this.history.location, this.latestLocation);
@@ -996,7 +994,7 @@ var RouterCore = class {
     this.resolvePathWithBase = (from, path) => {
       return resolvePath({
         base: from,
-        to: path.includes("//") ? cleanPath(path) : path,
+        to: cleanPath(path),
         trailingSlash: this.options.trailingSlash,
         cache: this.resolvePathCache
       });
@@ -1039,22 +1037,15 @@ var RouterCore = class {
         const lightweightResult = this.matchRoutesLightweight(currentLocation);
         if (dest.from && false) ;
         const defaultedFromPath = dest.unsafeRelative === "path" ? currentLocation.pathname : dest.from ?? lightweightResult.fullPath;
-        const destTo = dest.to ? `${dest.to}` : void 0;
+        const fromPath = this.resolvePathWithBase(defaultedFromPath, ".");
         const fromSearch = lightweightResult.search;
         const fromParams = Object.assign(/* @__PURE__ */ Object.create(null), lightweightResult.params);
-        const sourcePath = destTo?.charCodeAt(0) === 47 ? "/" : this.resolvePathWithBase(defaultedFromPath, ".");
-        const nextTo = destTo ? this.resolvePathWithBase(sourcePath, destTo) : sourcePath;
+        const nextTo = dest.to ? this.resolvePathWithBase(fromPath, `${dest.to}`) : this.resolvePathWithBase(fromPath, ".");
         const nextParams = dest.params === false || dest.params === null ? /* @__PURE__ */ Object.create(null) : (dest.params ?? true) === true ? fromParams : Object.assign(fromParams, functionalUpdate$1(dest.params, fromParams));
-        const destRoute = this.routesByPath[trimPathRight(nextTo)];
-        let destRoutes;
-        if (destRoute) destRoutes = this.getRouteBranch(destRoute);
-        else if (nextTo.includes("$")) destRoutes = [];
-        else {
-          const destMatchResult = this.getMatchedRoutes(nextTo);
-          destRoutes = destMatchResult.matchedRoutes;
-          if (this.options.notFoundRoute && (!destMatchResult.foundRoute || destMatchResult.foundRoute.path !== "/" && destMatchResult.routeParams["**"])) destRoutes = [...destRoutes, this.options.notFoundRoute];
-        }
-        if (destRoutes.length && hasKeys(nextParams)) for (const route of destRoutes) {
+        const destMatchResult = this.getMatchedRoutes(nextTo);
+        let destRoutes = destMatchResult.matchedRoutes;
+        if ((!destMatchResult.foundRoute || destMatchResult.foundRoute.path !== "/" && destMatchResult.routeParams["**"]) && this.options.notFoundRoute) destRoutes = [...destRoutes, this.options.notFoundRoute];
+        if (Object.keys(nextParams).length > 0) for (const route of destRoutes) {
           const fn = route.options.params?.stringify ?? route.options.stringifyParams;
           if (fn) try {
             Object.assign(nextParams, fn(nextParams));
@@ -1151,7 +1142,6 @@ var RouterCore = class {
       return buildWithMatches(opts);
     };
     this.commitLocation = async ({ viewTransition, ignoreBlocker, ...next }) => {
-      let historyAction;
       const isSameState = () => {
         const ignoredProps = [
           "key",
@@ -1200,11 +1190,10 @@ var RouterCore = class {
         }
         nextHistory.state.__hashScrollIntoViewOptions = hashScrollIntoView ?? this.options.defaultHashScrollIntoView ?? true;
         this.shouldViewTransition = viewTransition;
-        historyAction = next.replace ? "REPLACE" : "PUSH";
-        this.history[historyAction === "REPLACE" ? "replace" : "push"](nextHistory.publicHref, nextHistory.state, { ignoreBlocker });
+        this.history[next.replace ? "replace" : "push"](nextHistory.publicHref, nextHistory.state, { ignoreBlocker });
       }
       this.resetNextScroll = next.resetScroll ?? true;
-      if (!this.history.subscribers.size) this.load(historyAction ? { action: { type: historyAction } } : void 0);
+      if (!this.history.subscribers.size) this.load();
       return this.commitLocationPromise;
     };
     this.buildAndCommitLocation = ({ replace, resetScroll, hashScrollIntoView, viewTransition, ignoreBlocker, href, ...rest } = {}) => {
@@ -1309,7 +1298,6 @@ var RouterCore = class {
       });
     };
     this.load = async (opts) => {
-      const historyAction = opts?.action?.type;
       let redirect2;
       let notFound;
       let loadPromise;
@@ -1318,8 +1306,6 @@ var RouterCore = class {
         this.startTransition(async () => {
           try {
             this.beforeLoad();
-            if (historyAction) locationHistoryActions.set(this.latestLocation, historyAction);
-            else locationHistoryActions.delete(this.latestLocation);
             const next = this.latestLocation;
             const locationChangeInfo = getLocationChangeInfo(next, this.stores.resolvedLocation.get());
             if (!this.stores.redirect.get()) this.emit({
@@ -1601,14 +1587,6 @@ var RouterCore = class {
       this.routesById[notFoundRoute.id] = notFoundRoute;
     }
   }
-  getRouteBranch(route) {
-    let branch = this.routeBranchCache.get(route);
-    if (!branch) {
-      branch = buildRouteBranch(route);
-      this.routeBranchCache.set(route, branch);
-    }
-    return branch;
-  }
   get looseRoutesById() {
     return this.routesById;
   }
@@ -1617,7 +1595,7 @@ var RouterCore = class {
   }
   matchRoutesInternal(next, opts) {
     const matchedRoutesResult = this.getMatchedRoutes(next.pathname);
-    const { foundRoute, routeParams } = matchedRoutesResult;
+    const { foundRoute, routeParams, parsedParams } = matchedRoutesResult;
     let { matchedRoutes } = matchedRoutesResult;
     let isGlobalNotFound = false;
     if (foundRoute ? foundRoute.path !== "/" && routeParams["**"] : trimPathRight(next.pathname)) if (this.options.notFoundRoute) matchedRoutes = [...matchedRoutes, this.options.notFoundRoute];
@@ -1669,7 +1647,7 @@ var RouterCore = class {
       const strictParams = existingMatch?._strictParams ?? usedParams;
       let paramsError = void 0;
       if (!existingMatch) try {
-        extractStrictParams(route, strictParams);
+        extractStrictParams(route, usedParams, parsedParams, strictParams);
       } catch (err) {
         if (isNotFound(err) || isRedirect(err)) paramsError = err;
         else paramsError = new PathParamError(err.message, { cause: err });
@@ -1775,7 +1753,7 @@ var RouterCore = class {
   * operations like AbortController, ControlledPromise, loaderDeps, and full match objects.
   */
   matchRoutesLightweight(location) {
-    const { matchedRoutes, routeParams } = this.getMatchedRoutes(location.pathname);
+    const { matchedRoutes, routeParams, parsedParams } = this.getMatchedRoutes(location.pathname);
     const lastRoute = last(matchedRoutes);
     const accumulatedSearch = { ...location.search };
     for (const route of matchedRoutes) try {
@@ -1790,7 +1768,7 @@ var RouterCore = class {
     else {
       const strictParams = Object.assign(/* @__PURE__ */ Object.create(null), routeParams);
       for (const route of matchedRoutes) try {
-        extractStrictParams(route, strictParams);
+        extractStrictParams(route, routeParams, parsedParams ?? {}, strictParams);
       } catch {
       }
       params = strictParams;
@@ -1835,15 +1813,18 @@ function getMatchedRoutes({ pathname, routesById, processedTree }) {
   const routeParams = /* @__PURE__ */ Object.create(null);
   const trimmedPath = trimPathRight(pathname);
   let foundRoute = void 0;
+  let parsedParams = void 0;
   const match = findRouteMatch(trimmedPath, processedTree, true);
   if (match) {
     foundRoute = match.route;
     Object.assign(routeParams, match.rawParams);
+    parsedParams = Object.assign(/* @__PURE__ */ Object.create(null), match.parsedParams);
   }
   return {
     matchedRoutes: match?.branch || [routesById["__root__"]],
     routeParams,
-    foundRoute
+    foundRoute,
+    parsedParams
   };
 }
 function applySearchMiddleware({ search, dest, destRoutes, _includeValidateSearch }) {
@@ -1915,11 +1896,12 @@ function findGlobalNotFoundRouteId(notFoundMode, routes) {
   }
   return rootRouteId;
 }
-function extractStrictParams(route, accumulatedParams) {
+function extractStrictParams(route, referenceParams, parsedParams, accumulatedParams) {
   const parseParams = route.options.params?.parse ?? route.options.parseParams;
-  if (parseParams) {
+  if (parseParams) if (route.options.skipRouteOnParseError) {
+    for (const key in referenceParams) if (key in parsedParams) accumulatedParams[key] = parsedParams[key];
+  } else {
     const result = parseParams(accumulatedParams);
-    if (result === false) throw new Error("Route params.parse returned false for a matched route");
     Object.assign(accumulatedParams, result);
   }
 }
@@ -2136,8 +2118,8 @@ function useLinkProps(options, forwardedRef) {
       }
       if (activeOptions?.includeSearch ?? true) {
         if (currentLocation2.search !== next2.search) {
-          const currentSearchEmpty = !currentLocation2.search || typeof currentLocation2.search === "object" && !hasKeys(currentLocation2.search);
-          const nextSearchEmpty = !next2.search || typeof next2.search === "object" && !hasKeys(next2.search);
+          const currentSearchEmpty = !currentLocation2.search || typeof currentLocation2.search === "object" && Object.keys(currentLocation2.search).length === 0;
+          const nextSearchEmpty = !next2.search || typeof next2.search === "object" && Object.keys(next2.search).length === 0;
           if (!(currentSearchEmpty && nextSearchEmpty)) {
             if (!deepEqual(currentLocation2.search, next2.search, {
               partial: !exact,
@@ -2429,14 +2411,8 @@ var Router = class extends RouterCore {
     super(options, getStoreFactory);
   }
 };
-var noopScriptHandler = () => {
-};
-function setScriptAttrs(script, attrs) {
-  if (!attrs) return;
-  for (const [key, value] of Object.entries(attrs)) if (key !== "suppressHydrationWarning" && value !== void 0 && value !== false) script.setAttribute(key, typeof value === "boolean" ? "" : String(value));
-}
 function Asset(asset) {
-  const { attrs, children, nonce, preventScriptHoist } = asset;
+  const { attrs, children, nonce } = asset;
   switch (asset.tag) {
     case "title":
       return /* @__PURE__ */ jsxRuntimeExports.jsx("title", {
@@ -2466,14 +2442,13 @@ function Asset(asset) {
     case "script":
       return /* @__PURE__ */ jsxRuntimeExports.jsx(Script, {
         attrs,
-        preventScriptHoist,
         children
       });
     default:
       return null;
   }
 }
-function Script({ attrs, children, preventScriptHoist }) {
+function Script({ attrs, children }) {
   useRouter();
   useHydrated();
   const dataScript = typeof attrs?.type === "string" && attrs.type !== "" && attrs.type !== "text/javascript" && attrs.type !== "module";
@@ -2488,26 +2463,32 @@ function Script({ attrs, children, preventScriptHoist }) {
           return attrs.src;
         }
       })();
-      for (const el of document.querySelectorAll("script[src]")) if (el.src === normSrc) return;
+      if (Array.from(document.querySelectorAll("script[src]")).find((el) => el.src === normSrc)) return;
       const script = document.createElement("script");
-      setScriptAttrs(script, attrs);
+      for (const [key, value] of Object.entries(attrs)) if (key !== "suppressHydrationWarning" && value !== void 0 && value !== false) script.setAttribute(key, typeof value === "boolean" ? "" : String(value));
       document.head.appendChild(script);
-      return () => script.remove();
+      return () => {
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
     }
     if (typeof children === "string") {
       const typeAttr = typeof attrs?.type === "string" ? attrs.type : "text/javascript";
       const nonceAttr = typeof attrs?.nonce === "string" ? attrs.nonce : void 0;
-      for (const el of document.querySelectorAll("script:not([src])")) {
-        if (!(el instanceof HTMLScriptElement)) continue;
+      if (Array.from(document.querySelectorAll("script:not([src])")).find((el) => {
+        if (!(el instanceof HTMLScriptElement)) return false;
         const sType = el.getAttribute("type") ?? "text/javascript";
         const sNonce = el.getAttribute("nonce") ?? void 0;
-        if (el.textContent === children && sType === typeAttr && sNonce === nonceAttr) return;
-      }
+        return el.textContent === children && sType === typeAttr && sNonce === nonceAttr;
+      })) return;
       const script = document.createElement("script");
       script.textContent = children;
-      setScriptAttrs(script, attrs);
+      if (attrs) {
+        for (const [key, value] of Object.entries(attrs)) if (key !== "suppressHydrationWarning" && value !== void 0 && value !== false) script.setAttribute(key, typeof value === "boolean" ? "" : String(value));
+      }
       document.head.appendChild(script);
-      return () => script.remove();
+      return () => {
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
     }
   }, [
     attrs,
@@ -2515,17 +2496,10 @@ function Script({ attrs, children, preventScriptHoist }) {
     dataScript
   ]);
   {
-    if (attrs?.src) {
-      if (!preventScriptHoist) return /* @__PURE__ */ jsxRuntimeExports.jsx("script", {
-        ...attrs,
-        suppressHydrationWarning: true
-      });
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("script", {
-        ...attrs,
-        onLoad: noopScriptHandler,
-        suppressHydrationWarning: true
-      });
-    }
+    if (attrs?.src) return /* @__PURE__ */ jsxRuntimeExports.jsx("script", {
+      ...attrs,
+      suppressHydrationWarning: true
+    });
     if (typeof children === "string") return /* @__PURE__ */ jsxRuntimeExports.jsx("script", {
       ...attrs,
       dangerouslySetInnerHTML: { __html: children },
@@ -2535,7 +2509,7 @@ function Script({ attrs, children, preventScriptHoist }) {
   }
 }
 function buildTagsFromMatches(router, nonce, matches, assetCrossOrigin) {
-  const routeMeta = matches.map((match) => match.meta).filter((meta) => meta !== void 0);
+  const routeMeta = matches.map((match) => match.meta).filter(Boolean);
   const resultMeta = [];
   const metaByAttribute = {};
   let title;
@@ -2581,7 +2555,7 @@ function buildTagsFromMatches(router, nonce, matches, assetCrossOrigin) {
     }
   });
   resultMeta.reverse();
-  const constructedLinks = matches.flatMap((match) => match.links ?? []).filter((link) => link !== void 0).map((link) => ({
+  const constructedLinks = matches.map((match) => match.links).filter(Boolean).flat(1).map((link) => ({
     tag: "link",
     attrs: {
       ...link,
@@ -2589,46 +2563,44 @@ function buildTagsFromMatches(router, nonce, matches, assetCrossOrigin) {
     }
   }));
   const manifest = router.ssr?.manifest;
-  const manifestCssTags = [];
-  if (manifest) {
-    matches.forEach((match) => {
-      manifest.routes[match.routeId]?.css?.forEach((link) => {
-        const resolvedLink = resolveManifestCssLink(link);
-        manifestCssTags.push({
-          tag: "link",
-          attrs: {
-            rel: "stylesheet",
-            ...resolvedLink,
-            crossOrigin: getAssetCrossOrigin(assetCrossOrigin, "stylesheet") ?? resolvedLink.crossOrigin,
-            suppressHydrationWarning: true,
-            nonce
-          }
-        });
-      });
-    });
-    if (manifest.inlineStyle) manifestCssTags.push({
-      tag: "style",
-      attrs: {
-        ...manifest.inlineStyle.attrs,
-        nonce
-      },
-      children: manifest.inlineStyle.children,
-      inlineCss: true
-    });
-  }
-  const preloadLinks = [];
-  if (manifest) matches.forEach((match) => {
-    manifest.routes[match.routeId]?.preloads?.forEach((preload) => {
-      preloadLinks.push({
+  const assetLinks = matches.map((match) => manifest?.routes[match.routeId]?.assets ?? []).filter(Boolean).flat(1).flatMap((asset) => {
+    if (asset.tag === "link") {
+      if (isInlinableStylesheet(manifest, asset)) return [];
+      return [{
         tag: "link",
         attrs: {
-          ...getScriptPreloadAttrs(manifest, preload, assetCrossOrigin),
+          ...asset.attrs,
+          crossOrigin: getAssetCrossOrigin(assetCrossOrigin, "stylesheet") ?? asset.attrs?.crossOrigin,
+          suppressHydrationWarning: true,
           nonce
         }
-      });
-    });
+      }];
+    }
+    if (asset.tag === "style") return [{
+      tag: "style",
+      attrs: {
+        ...asset.attrs,
+        nonce
+      },
+      children: asset.children,
+      ...asset.inlineCss ? { inlineCss: true } : {}
+    }];
+    return [];
   });
-  const styles = matches.flatMap((match) => match.styles ?? []).filter((style) => style !== void 0).map(({ children, ...attrs }) => ({
+  const preloadLinks = [];
+  matches.map((match) => router.looseRoutesById[match.routeId]).forEach((route) => router.ssr?.manifest?.routes[route.id]?.preloads?.filter(Boolean).forEach((preload) => {
+    const preloadLink = resolveManifestAssetLink(preload);
+    preloadLinks.push({
+      tag: "link",
+      attrs: {
+        rel: "modulepreload",
+        href: preloadLink.href,
+        crossOrigin: getAssetCrossOrigin(assetCrossOrigin, "modulepreload") ?? preloadLink.crossOrigin,
+        nonce
+      }
+    });
+  }));
+  const styles = matches.map((match) => match.styles).flat(1).filter(Boolean).map(({ children, ...attrs }) => ({
     tag: "style",
     attrs: {
       ...attrs,
@@ -2636,7 +2608,7 @@ function buildTagsFromMatches(router, nonce, matches, assetCrossOrigin) {
     },
     children
   }));
-  const headScripts = matches.flatMap((match) => match.headScripts ?? []).filter((script) => script !== void 0).map(({ children, ...script }) => ({
+  const headScripts = matches.map((match) => match.headScripts).flat(1).filter(Boolean).map(({ children, ...script }) => ({
     tag: "script",
     attrs: {
       ...script,
@@ -2644,20 +2616,29 @@ function buildTagsFromMatches(router, nonce, matches, assetCrossOrigin) {
     },
     children
   }));
-  const tags = [];
-  appendUniqueUserTags(tags, resultMeta);
-  tags.push(...preloadLinks);
-  appendUniqueUserTags(tags, constructedLinks);
-  tags.push(...manifestCssTags);
-  appendUniqueUserTags(tags, styles);
-  appendUniqueUserTags(tags, headScripts);
-  return tags;
+  return uniqBy([
+    ...resultMeta,
+    ...preloadLinks,
+    ...constructedLinks,
+    ...assetLinks,
+    ...styles,
+    ...headScripts
+  ], (d) => JSON.stringify(d));
 }
 var useTags = (assetCrossOrigin) => {
   const router = useRouter();
   const nonce = router.options.ssr?.nonce;
   return buildTagsFromMatches(router, nonce, router.stores.matches.get(), assetCrossOrigin);
 };
+function uniqBy(arr, fn) {
+  const seen = /* @__PURE__ */ new Set();
+  return arr.filter((item) => {
+    const key = fn(item);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 function HeadContent(props) {
   const tags = useTags(props.assetCrossOrigin);
   const nonce = useRouter().options.ssr?.nonce;
@@ -2674,19 +2655,16 @@ var Scripts = () => {
     const assetScripts = [];
     const manifest = router.ssr?.manifest;
     if (!manifest) return [];
-    for (const match of matches) {
-      const scripts = manifest.routes[match.routeId]?.scripts;
-      if (!scripts) continue;
-      for (const asset of scripts) assetScripts.push({
+    matches.map((match) => router.looseRoutesById[match.routeId]).forEach((route) => manifest.routes[route.id]?.assets?.filter((d) => d.tag === "script").forEach((asset) => {
+      assetScripts.push({
         tag: "script",
         attrs: {
           ...asset.attrs,
           nonce
         },
-        children: asset.children,
-        ...typeof asset.attrs?.src === "string" ? { preventScriptHoist: true } : {}
+        children: asset.children
       });
-    }
+    }));
     return assetScripts;
   };
   const getScripts = (matches) => matches.map((match) => match.scripts).flat(1).filter(Boolean).map(({ children, ...script }) => ({
@@ -2705,11 +2683,10 @@ var Scripts = () => {
   }
 };
 function renderScripts(router, scripts, assetScripts) {
+  let serverBufferedScript = void 0;
+  if (router.serverSsr) serverBufferedScript = router.serverSsr.takeBufferedScripts();
   const allScripts = [...scripts, ...assetScripts];
-  if (router.serverSsr) {
-    const serverBufferedScript = router.serverSsr.takeBufferedScripts();
-    if (serverBufferedScript) allScripts.unshift(serverBufferedScript);
-  }
+  if (serverBufferedScript) allScripts.unshift(serverBufferedScript);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: allScripts.map((asset, i) => /* @__PURE__ */ reactExports.createElement(Asset, {
     ...asset,
     key: `tsr-scripts-${asset.tag}-${i}`
@@ -3376,107 +3353,7 @@ var Removable = class {
     }
   }
 };
-function infiniteQueryBehavior(pages) {
-  return {
-    onFetch: (context, query) => {
-      const options = context.options;
-      const direction = context.fetchOptions?.meta?.fetchMore?.direction;
-      const oldPages = context.state.data?.pages || [];
-      const oldPageParams = context.state.data?.pageParams || [];
-      let result = { pages: [], pageParams: [] };
-      let currentPage = 0;
-      const fetchFn = async () => {
-        let cancelled = false;
-        const addSignalProperty = (object) => {
-          addConsumeAwareSignal(
-            object,
-            () => context.signal,
-            () => cancelled = true
-          );
-        };
-        const queryFn = ensureQueryFn(context.options, context.fetchOptions);
-        const fetchPage = async (data, param, previous) => {
-          if (cancelled) {
-            return Promise.reject(context.signal.reason);
-          }
-          if (param == null && data.pages.length) {
-            return Promise.resolve(data);
-          }
-          const createQueryFnContext = () => {
-            const queryFnContext2 = {
-              client: context.client,
-              queryKey: context.queryKey,
-              pageParam: param,
-              direction: previous ? "backward" : "forward",
-              meta: context.options.meta
-            };
-            addSignalProperty(queryFnContext2);
-            return queryFnContext2;
-          };
-          const queryFnContext = createQueryFnContext();
-          const page = await queryFn(queryFnContext);
-          const { maxPages } = context.options;
-          const addTo = previous ? addToStart : addToEnd;
-          return {
-            pages: addTo(data.pages, page, maxPages),
-            pageParams: addTo(data.pageParams, param, maxPages)
-          };
-        };
-        if (direction && oldPages.length) {
-          const previous = direction === "backward";
-          const pageParamFn = previous ? getPreviousPageParam : getNextPageParam;
-          const oldData = {
-            pages: oldPages,
-            pageParams: oldPageParams
-          };
-          const param = pageParamFn(options, oldData);
-          result = await fetchPage(oldData, param, previous);
-        } else {
-          const remainingPages = pages ?? oldPages.length;
-          do {
-            const param = currentPage === 0 ? oldPageParams[0] ?? options.initialPageParam : getNextPageParam(options, result);
-            if (currentPage > 0 && param == null) {
-              break;
-            }
-            result = await fetchPage(result, param);
-            currentPage++;
-          } while (currentPage < remainingPages);
-        }
-        return result;
-      };
-      if (context.options.persister) {
-        context.fetchFn = () => {
-          return context.options.persister?.(
-            fetchFn,
-            {
-              client: context.client,
-              queryKey: context.queryKey,
-              meta: context.options.meta,
-              signal: context.signal
-            },
-            query
-          );
-        };
-      } else {
-        context.fetchFn = fetchFn;
-      }
-    }
-  };
-}
-function getNextPageParam(options, { pages, pageParams }) {
-  const lastIndex = pages.length - 1;
-  return pages.length > 0 ? options.getNextPageParam(
-    pages[lastIndex],
-    pages,
-    pageParams[lastIndex],
-    pageParams
-  ) : void 0;
-}
-function getPreviousPageParam(options, { pages, pageParams }) {
-  return pages.length > 0 ? options.getPreviousPageParam?.(pages[0], pages, pageParams[0], pageParams) : void 0;
-}
 var Query = class extends Removable {
-  #queryType;
   #initialState;
   #revertState;
   #cache;
@@ -3501,17 +3378,11 @@ var Query = class extends Removable {
   get meta() {
     return this.options.meta;
   }
-  get queryType() {
-    return this.#queryType;
-  }
   get promise() {
     return this.#retryer?.promise;
   }
   setOptions(options) {
     this.options = { ...this.#defaultOptions, ...options };
-    if (options?._type) {
-      this.#queryType = options._type;
-    }
     this.updateGcTime(this.options.gcTime);
     if (this.state && this.state.data === void 0) {
       const defaultState = getDefaultState$1(this.options);
@@ -3538,8 +3409,8 @@ var Query = class extends Removable {
     });
     return data;
   }
-  setState(state) {
-    this.#dispatch({ type: "setState", state });
+  setState(state, setStateOptions) {
+    this.#dispatch({ type: "setState", state, setStateOptions });
   }
   cancel(options) {
     const promise = this.#retryer?.promise;
@@ -3709,10 +3580,7 @@ var Query = class extends Removable {
       return context2;
     };
     const context = createFetchContext();
-    const behavior = this.#queryType === "infinite" ? infiniteQueryBehavior(
-      this.options.pages
-    ) : this.options.behavior;
-    behavior?.onFetch(context, this);
+    this.options.behavior?.onFetch(context, this);
     this.#revertState = this.state;
     if (this.state.fetchStatus === "idle" || this.state.fetchMeta !== context.fetchOptions?.meta) {
       this.#dispatch({ type: "fetch", meta: context.fetchOptions?.meta });
@@ -3898,6 +3766,105 @@ function getDefaultState$1(options) {
     status: hasData ? "success" : "pending",
     fetchStatus: "idle"
   };
+}
+function infiniteQueryBehavior(pages) {
+  return {
+    onFetch: (context, query) => {
+      const options = context.options;
+      const direction = context.fetchOptions?.meta?.fetchMore?.direction;
+      const oldPages = context.state.data?.pages || [];
+      const oldPageParams = context.state.data?.pageParams || [];
+      let result = { pages: [], pageParams: [] };
+      let currentPage = 0;
+      const fetchFn = async () => {
+        let cancelled = false;
+        const addSignalProperty = (object) => {
+          addConsumeAwareSignal(
+            object,
+            () => context.signal,
+            () => cancelled = true
+          );
+        };
+        const queryFn = ensureQueryFn(context.options, context.fetchOptions);
+        const fetchPage = async (data, param, previous) => {
+          if (cancelled) {
+            return Promise.reject();
+          }
+          if (param == null && data.pages.length) {
+            return Promise.resolve(data);
+          }
+          const createQueryFnContext = () => {
+            const queryFnContext2 = {
+              client: context.client,
+              queryKey: context.queryKey,
+              pageParam: param,
+              direction: previous ? "backward" : "forward",
+              meta: context.options.meta
+            };
+            addSignalProperty(queryFnContext2);
+            return queryFnContext2;
+          };
+          const queryFnContext = createQueryFnContext();
+          const page = await queryFn(queryFnContext);
+          const { maxPages } = context.options;
+          const addTo = previous ? addToStart : addToEnd;
+          return {
+            pages: addTo(data.pages, page, maxPages),
+            pageParams: addTo(data.pageParams, param, maxPages)
+          };
+        };
+        if (direction && oldPages.length) {
+          const previous = direction === "backward";
+          const pageParamFn = previous ? getPreviousPageParam : getNextPageParam;
+          const oldData = {
+            pages: oldPages,
+            pageParams: oldPageParams
+          };
+          const param = pageParamFn(options, oldData);
+          result = await fetchPage(oldData, param, previous);
+        } else {
+          const remainingPages = pages ?? oldPages.length;
+          do {
+            const param = currentPage === 0 ? oldPageParams[0] ?? options.initialPageParam : getNextPageParam(options, result);
+            if (currentPage > 0 && param == null) {
+              break;
+            }
+            result = await fetchPage(result, param);
+            currentPage++;
+          } while (currentPage < remainingPages);
+        }
+        return result;
+      };
+      if (context.options.persister) {
+        context.fetchFn = () => {
+          return context.options.persister?.(
+            fetchFn,
+            {
+              client: context.client,
+              queryKey: context.queryKey,
+              meta: context.options.meta,
+              signal: context.signal
+            },
+            query
+          );
+        };
+      } else {
+        context.fetchFn = fetchFn;
+      }
+    }
+  };
+}
+function getNextPageParam(options, { pages, pageParams }) {
+  const lastIndex = pages.length - 1;
+  return pages.length > 0 ? options.getNextPageParam(
+    pages[lastIndex],
+    pages,
+    pageParams[lastIndex],
+    pageParams
+  ) : void 0;
+}
+function getPreviousPageParam(options, { pages, pageParams }) {
+  return pages.length > 0 ? options.getPreviousPageParam?.(pages[0], pages, pageParams[0], pageParams) : void 0;
 }
 var Mutation = class extends Removable {
   #client;
@@ -4553,14 +4520,14 @@ var QueryClient = class {
     return this.fetchQuery(options).then(noop).catch(noop);
   }
   fetchInfiniteQuery(options) {
-    options._type = "infinite";
+    options.behavior = infiniteQueryBehavior(options.pages);
     return this.fetchQuery(options);
   }
   prefetchInfiniteQuery(options) {
     return this.fetchInfiniteQuery(options).then(noop).catch(noop);
   }
   ensureInfiniteQueryData(options) {
-    options._type = "infinite";
+    options.behavior = infiniteQueryBehavior(options.pages);
     return this.ensureQueryData(options);
   }
   resumePausedMutations() {
@@ -4674,7 +4641,7 @@ var QueryClientProvider = ({
   }, [client]);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientContext.Provider, { value: client, children });
 };
-const appCss = "/assets/styles-mzHKZwf5.css";
+const appCss = "/assets/styles-C8tCFd11.css";
 function NotFoundComponent() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex min-h-screen items-center justify-center bg-background px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-md text-center", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-7xl font-bold text-foreground", children: "404" }),
@@ -4760,7 +4727,7 @@ function RootComponent() {
   const { queryClient } = Route$1.useRouteContext();
   return /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientProvider, { client: queryClient, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Outlet, {}) });
 }
-const $$splitComponentImporter = () => import("./index-oAD_MwXy.js");
+const $$splitComponentImporter = () => import("./index-DDF9GLle.js");
 const Route2 = createFileRoute("/")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
